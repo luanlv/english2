@@ -1,0 +1,9 @@
+var ChatController = require('./_controller.msx');
+var ChatView = require('./_view.msx');
+
+var Chat = {
+  controller: ChatController,
+  view: ChatView
+};
+
+module.exports = Chat;

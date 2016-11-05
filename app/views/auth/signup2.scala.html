@@ -1,0 +1,32 @@
+@(form: Form[_])(implicit ctx: Context)
+
+@auth.layout(
+	title = trans.signUp.str(),
+	zen = true) {
+	<div class="content_box small_box signup">
+		<div class="alternative">
+			@trans.haveAnAccount()
+			<a href="@routes.Auth.login()" class="button" data-icon="F"> @trans.signIn()</a>
+		</div>
+		<div class="signup_box">
+			<h1 class="lichess_title">@trans.signUp()</h1>
+			<form action="@routes.Auth.signupPost" method="POST">
+				<ul>
+					@auth.formFields(form("username"), form("password"), form("email").some)
+					<li>
+					</li>
+					@errMsg(form)
+					<li data-icon="!">&nbsp;
+						<small>
+							By registering, you agree to be bound by our
+						</small>
+					</li>
+					<li>
+						<button type="submit" class="submit button" data-icon="F"> @trans.signUp()</button>
+					</li>
+				</ul>
+				<input type="hidden" class="referrer" name="_referrer" value="@currentUrl" />
+			</form>
+		</div>
+	</div>
+}

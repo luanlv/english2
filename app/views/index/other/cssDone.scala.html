@@ -1,0 +1,70 @@
+<script >
+	var next = 0;
+	function CSSDone(how) {
+		logme('zOMG, CSS #' + next + ' is done: ' + how);
+	}
+
+	function loadCSS() {
+		var url = "/assets/semantic/semantic.min.css?v=3",
+		head = document.getElementsByTagName('head')[0];
+		link = document.createElement('link');
+
+		link.type = "text/css";
+		link.rel = "stylesheet";
+		link.href = url;
+
+		// MAGIC
+		// #1
+		link.onload = function () {
+			CSSDone('onload listener');
+		}
+		// #2
+		if (link.addEventListener) {
+			link.addEventListener('load', function() {
+				CSSDone("DOM's load event");
+			}, false);
+		}
+		// #3
+		link.onreadystatechange = function() {
+			var state = link.readyState;
+			if (state === 'loaded' || state === 'complete') {
+				link.onreadystatechange = null;
+				CSSDone("onreadystatechange");
+			}
+		};
+
+		var cssnum = document.styleSheets.length;
+		var ti = setInterval(function() {
+			if (document.styleSheets.length > cssnum) {
+				CSSDone('listening to styleSheets.length change');
+				console.log("doadload complete!")
+				clearInterval(ti);
+			}
+		}, 10);
+
+		head.appendChild(link);
+
+
+		var isFF = /Firefox/.test(navigator.userAgent);
+		if (!isFF) {
+			return;
+		}
+
+		var style = document.createElement('style');
+		style.textContent = '@@import "' + url + '"';
+
+		var fi = setInterval(function() {
+			try {
+				style.sheet.cssRules;
+				CSSDone('listening to @@import-ed cssRules');
+				clearInterval(fi);
+			} catch (e){}
+		}, 10);
+
+		head.appendChild(style);
+
+	}
+
+
+	loadCSS()
+</script>

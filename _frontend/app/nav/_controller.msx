@@ -1,0 +1,61 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+
+var NavController = function(){
+      console.log(" nav render");
+      m.redraw.strategy("diff");
+      api.rd("Controller: nav");
+      var ctrl = this;
+      ctrl.ping = m.prop(wsCtrl.ping);
+      ctrl.userNumber = m.prop(0);
+      
+      var initPing = setInterval(function(){
+        if(wsCtrl.ping) {
+          clearInterval(initPing);
+          rd.nav(function(){ctrl.ping(wsCtrl.ping);ctrl.userNumber(wsCtrl.total); m.redraw();})
+        }
+      }, 200);
+      
+      setInterval(function(){
+        rd.nav(function(){ctrl.ping(wsCtrl.ping);ctrl.userNumber(wsCtrl.total); m.redraw();})
+      }, 1000);
+      ctrl.displayUser = false;
+      ctrl.toggleUser = function(){
+        wsCtrl.data.notify.display = false;
+        wsCtrl.data.makeFriend.display = false;
+        ctrl.displayUser = !ctrl.displayUser
+      };
+      ctrl.displayLogin = false;
+      ctrl.toggleLogin = function(){
+        ctrl.displayLogin = !ctrl.displayLogin
+      };
+      ctrl.displayNofity = function(){
+        //if(wsCtrl.data.notify.notifyMessage.length < 1){
+        if(wsCtrl.data.notify.display == false ) {
+          wsCtrl.data.notify.init = false;
+          wsCtrl.send(wsCtrl.sendData("gnm", 0))
+        }
+        //}
+        wsCtrl.data.notify.n = 0;
+        wsCtrl.data.makeFriend.display = false;
+        ctrl.displayUser = false;
+        wsCtrl.data.notify.display = !wsCtrl.data.notify.display;
+      };
+      
+      
+      
+      ctrl.displayFriend = function(){
+        if(wsCtrl.data.makeFriend.display == false ) {
+          wsCtrl.data.makeFriend.init = false;
+          wsCtrl.send(wsCtrl.sendData("gmf", 0))
+        }
+        wsCtrl.data.notify.display = false;
+        ctrl.displayUser = false;
+        wsCtrl.data.makeFriend.display = !wsCtrl.data.makeFriend.display;
+      }
+      
+    }
+    
+    
+module.exports = NavController;

@@ -1,0 +1,24 @@
+#!/bin/sh
+. bin/lilarc
+
+./ui/build prod
+
+SRC=public/javascripts
+TARGET=public/compiled
+
+mkdir -p public/compiled
+
+for file in tv.js puzzle.js user.js coordinate.js; do
+  orig=$SRC/$file
+  comp=$TARGET/$file
+  if [[ ! -f $comp || $orig -nt $comp ]]; then
+    lilalog "Compiling javascript - $file"
+    closure --js $orig --js_output_file $comp
+  fi
+done
+
+orig="$SRC/util.js $SRC/socket.js $SRC/main.js"
+comp=$TARGET/lichess.js
+lilalog "Compiling $comp"
+closure --js $orig --js_output_file $comp
+cat $SRC/deps.min.js $comp | sed '/^\/\*.*$/d' | sed '/^\s*$/d' > $comp.tmp; mv $comp.tmp $comp

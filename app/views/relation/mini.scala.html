@@ -1,0 +1,72 @@
+@(userId: String, blocked: Boolean, followable: Boolean, relation: Option[lila.relation.Relation] = None, relation2: Option[lila.relation.Relation] = None, isSelf: Boolean = false)(implicit ctx: Context)
+
+@if(!isSelf) {
+
+  @relation match {
+    case None if followable && !blocked => {
+      @relation2 match {
+        case None => {
+          <a class="tiny ui  basic animated relation button hint--bottom hover_text custom" tabindex="0" href="@routes.Relation.follow(userId)?mini=1">
+            <span class="visible content">Kết bạn</span>
+            <span class="hidden content">
+              <i class="thumbs outline up icon"></i>
+              Kết bạn
+            </span>
+          </a>
+        }
+
+        case _ => {
+          <a class="tiny ui yellow basic animated relation button hint--bottom hover_text custom" tabindex="0" href="@routes.Relation.follow(userId)?mini=1">
+            <span class="visible content">Chấp nhận</span>
+            <span class="hidden content">
+              <i class="thumbs outline up icon"></i>
+              Chấp nhận
+            </span>
+          </a>
+        }
+      }
+
+    }
+    case Some(true) => {
+      @relation2 match {
+        case None => {
+          <a class="tiny ui yellow basic animated relation button hint--bottom hover_text custom" tabindex="0" href="@routes.Relation.unfollow(userId)?mini=1">
+            <span class="visible content">Đã gửi</span>
+            <span class="hidden content">
+              <i class="thumbs up icon"></i>
+              Hủy kết bạn
+            </span>
+          </a>
+        }
+        case _ => {
+          <a class="tiny ui blue basic animated relation button hint--bottom hover_text custom" tabindex="0" href="@routes.Relation.unfriend(userId)?mini=1">
+            <span class="visible content">Bạn bè</span>
+            <span class="hidden content">
+              <i class="thumbs up icon"></i>
+              Xóa bạn
+            </span>
+          </a>
+        }
+      }
+
+    }
+    case Some(false) => {
+      <a class="relation button hint--bottom custom" data-hint="@trans.unblock()" class="hover_text" href="@routes.Relation.unblock(userId)?mini=1">
+        <span data-icon="k">&nbsp; @trans.blocked()</span>
+      </a>
+    }
+    case _ => {
+    }
+  }
+
+
+
+
+} else {
+  @*<a class="tiny ui  basic animated  relation button hint--bottom hover_text custom" tabindex="0" href="#">*@
+    @*<span class="visible content">Folowers</span>*@
+    @*<span class="hidden content">*@
+      @*View Followers*@
+    @*</span>*@
+  @*</a>*@
+}

@@ -1,0 +1,144 @@
+
+
+var Quickview = function(ctrl){
+  return (
+      m(".quickview-wrapper[data-pages='quickview'][id='quickview']",
+          [
+            m(".tab-content",
+                [
+                  m(".tab-pane.fade.in.active.no-padding[id='quickview-chat']",
+                      m(".view-port.clearfix[id='chat']",
+                          [
+                            m(".view.bg-white",
+                                [
+                                  m(".navbar.navbar-default",
+                                      m(".navbar-inner",
+                                          [
+                                            m("a.inline.action.p-l-10.link.text-master[data-navigate='view'][data-view-animation='push-parrallax'][data-view-port='#chat'][href='javascript:;']",
+                                                m("i.pg-plus")
+                                            ),
+                                            m(".view-heading",
+                                                m(".fs-11",
+                                                    "Show All"
+                                                )
+                                            ),
+                                            m("a.btn-link.quickview-toggle[data-toggle='quickview'][data-toggle-element='#quickview']",
+                                                m("i.pg-close")
+                                            )
+                                          ]
+                                      )
+                                  ),
+                                  m(".list-view.boreded.no-top-border[data-init-list-view='ioslist']",
+                                      [
+                                        m(".list-view-group-container",
+                                            [
+                                              m(".list-view-group-header.text-uppercase", ''),
+                                              m("ul",
+                                                  m("li.chat-user-list.clearfix",
+                                                      m("a[class=''][data-navigate='view'][data-view-animation='push-parrallax'][data-view-port='#chat'][href='#']",
+                                                          [
+                                                            m("span.col-xs-height.col-middle",
+                                                                m("span.thumbnail-wrapper.d32.circular.bg-success",
+                                                                    m("img.col-top[alt=''][data-src='/assets/img/profiles/1.jpg'][data-src-retina='/assets/img/profiles/1x.jpg'][height='34'][src='/assets/img/profiles/1x.jpg'][width='34']")
+                                                                )
+                                                            ),
+                                                            m("p.p-l-10.col-xs-height.col-middle.col-xs-12",
+                                                                [
+                                                                  m("span.text-master",
+                                                                      "ava flores"
+                                                                  ),
+                                                                  m("span.block.text-master.hint-text.fs-12",
+                                                                      "Hello there"
+                                                                  )
+                                                                ]
+                                                            )
+                                                          ]
+                                                      )
+                                                  )
+                                              )
+                                            ]
+                                        )
+                                      ]
+                                  )
+                                ]
+                            ),
+                            m(".view.chat-view.bg-white.clearfix",
+                                [
+                                  m(".navbar.navbar-default",
+                                      m(".navbar-inner",
+                                          [
+                                            m("a.link.text-master.inline.action.p-l-10.p-r-10[data-navigate='view'][data-view-animation='push-parrallax'][data-view-port='#chat'][href='javascript:;']",
+                                                m("i.pg-arrow_left")
+                                            ),
+                                            m(".view-heading",
+                                                m(".fs-11.hint-text",
+                                                    "Online"
+                                                )
+                                            ),
+                                            m("a.btn-link.quickview-toggle[data-toggle='quickview'][data-toggle-element='#quickview']",
+                                                m("i.pg-close")
+                                            )
+                                          ]
+                                      )
+                                  ),
+                                  m(".chat-inner[id='my-conversation']",
+                                      [
+                                        m(".message.clearfix",
+                                            m(".chat-bubble.from-me", '')
+                                        ),
+                                        m(".message.clearfix",
+                                            [
+                                              m(".profile-img-wrapper.m-t-5.inline",
+                                                  m("img.col-top[alt=''][data-src='/assets/img/profiles/avatar_small.jpg'][data-src-retina='/assets/img/profiles/avatar_small2x.jpg'][height='30'][src='/assets/img/profiles/avatar_small.jpg'][width='30']")
+                                              ),
+                                              m(".chat-bubble.from-them", '')
+                                            ]
+                                        ),
+                                        m(".message.clearfix",
+                                            m(".chat-bubble.from-me", '')
+                                        ),
+                                        m(".message.clearfix",
+                                            m(".chat-bubble.from-me", '')
+                                        ),
+                                        m(".message.clearfix",
+                                            [
+                                              m(".profile-img-wrapper.m-t-5.inline",
+                                                  m("img.col-top[alt=''][data-src='/assets/img/profiles/avatar_small.jpg'][data-src-retina='/assets/img/profiles/avatar_small2x.jpg'][height='30'][src='/assets/img/profiles/avatar_small.jpg'][width='30']")
+                                              ),
+                                              m(".chat-bubble.from-them", '')
+                                            ]
+                                        )
+                                      ]
+                                  ),
+                                  m(".cinput.b-t.b-grey.bg-white.clearfix.p-l-10.p-r-10",
+                                      m(".row",
+                                          [
+                                            m(".col-xs-1.p-t-15",
+                                                m("a.link.text-master[href='#']",
+                                                    m("i.fa.fa-plus-circle")
+                                                )
+                                            ),
+                                            m(".col-xs-8.no-padding",
+                                                m("input.form-control.chat-input[data-chat-conversation='#my-conversation'][data-chat-input=''][placeholder='Say something'][type='text']")
+                                            ),
+                                            m(".col-xs-2.link.text-master.m-l-10.m-t-15.p-l-10.b-l.b-grey.col-top",
+                                                m("a.link.text-master[href='#']",
+                                                    m("i.pg-camera")
+                                                )
+                                            )
+                                          ]
+                                      )
+                                  )
+                                ]
+                            )
+                          ]
+                      )
+                  )
+                ]
+            )
+          ]
+      )
+  )
+};
+
+module.exports = Quickview;

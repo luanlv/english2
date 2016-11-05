@@ -1,0 +1,30 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = {};
+
+Partial.Ping = function(ctrl){
+  return(
+      <div className="ui  popup show-ping">
+        <div className={(ctrl.ping()<500)?"green":((ctrl.ping()<1500)?"yellow":"red")}>{ctrl.ping()} ms</div>
+      </div>
+  )
+};
+
+Partial.MakeFriend = function(ctrl){
+  return(
+      <div className="ui popup show-makeFriend">
+        <div>Friend requests</div>
+      </div>
+  )
+};
+
+Partial.Messages = function(ctrl){
+  return(
+      <div className="ui  popup show-messages">
+        <div>Messages</div>
+      </div>
+  )
+};
+
+module.exports = Partial;

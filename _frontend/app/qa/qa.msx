@@ -1,0 +1,14 @@
+var QaController = require('./_controller.msx')
+var QaView = require('./_view.msx')
+
+//initData.dashboard = {}
+//initData.dashboard.data = {}
+
+var Qa = {
+  controller: QaController,
+  view: QaView
+  
+};
+
+
+module.exports = Qa;

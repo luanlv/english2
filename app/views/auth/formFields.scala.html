@@ -1,0 +1,37 @@
+@(username: Field, password: Field, emailOption: Option[Field])(implicit ctx: Context)
+
+<div class="field">
+	<label for="@username.id">@trans.username()</label>
+	<input
+	type="text"
+	pattern="^[\w-]+$"
+	required="required"
+	name="@username.name"
+	id="@username.id"
+	value="@username.value"/>
+</div>
+
+
+<div class="field">
+	<label for="@password.id">@trans.password()</label>
+	<input
+	type="password"
+	required="required"
+	name="@password.name"
+	id="@password.id" />
+	@errMsg(password)
+</div>
+
+
+@emailOption.map { email =>
+	<div class="field">
+		<label for="@email.id">@trans.email()</label>
+		<input
+		type="email"
+		required="required"
+		name="@email.name"
+		id="@email.id"
+		value="@email.value"/>
+		@errMsg(email)
+	</div>
+}

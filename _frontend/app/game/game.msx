@@ -1,0 +1,8 @@
+var GameController = require('./_controller.msx');
+var GameView = require('./_view.msx');
+var Game={};
+
+Game.controller = GameController;
+Game.view =GameView;
+
+module.exports = Game;

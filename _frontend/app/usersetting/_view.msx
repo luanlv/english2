@@ -1,0 +1,55 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+var Partial = require('./_partial.msx');
+
+var UserSettingView = function(ctrl) {
+  return (!ctrl.request.ready()?(
+      <div className="ui segment main-content loading mh500">
+      
+      </div>
+  ):[
+    <div className="ui grid main-content sha2 ">
+      <div className="head-user ui grid">
+        <div className="four wide column" style="  min-height: 250px">
+          {Partial.avatarWr(ctrl)}
+        </div>
+        <div className="twelve wide column edit-information" style="b min-height: 250px">
+          
+          <div class="ui labeled input">
+            <div className="field">Name:</div>
+            <input id="name" type="text" placeholder="Tên hiển thị!" value={ctrl.user().name}/>
+          </div>
+          <br/><br/><br/><br/><br/><br/><br/>
+          <div className="ui divider"></div>
+          <button class="ui button"
+                  onclick={function(){
+                    var sendInfo = {
+                      "name": $('#name').val()
+                    };
+                    console.log(sendInfo);
+            
+                    $.ajax({
+                      type: "POST",
+                      url: "/settings/updateInfo",
+                      data: JSON.stringify(sendInfo),
+                      contentType: "application/json",
+                      dataType: "text",
+                      success: function(data){
+                        wsCtrl.userName = $('#name').val();
+                      }
+                    });
+            
+                  }}
+          >
+            Save
+          </button>
+          <button class="ui button">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  ])
+}
+
+module.exports = UserSettingView;

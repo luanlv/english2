@@ -1,0 +1,33 @@
+{
+  "name": "english",
+  "description": "english site",
+  "version": "0.1.0",
+  "dependencies": {
+    "immutable": "^3.7.4",
+    "lodash": "^3.10.0"
+  },
+  "devDependencies": {
+    "browser-sync": "*",
+    "gulp": "3.9.0",
+    "gulp-autoprefixer": "*",
+    "gulp-browserify": "*",
+    "gulp-if": "*",
+    "gulp-minify-css": "*",
+    "gulp-minify": "*",
+    "gulp-clean-css": "*",
+    "gulp-msx": "*",
+    "gulp-rename": "*",
+    "gulp-ruby-sass": "*",
+    "gulp-sass": "*",
+    "gulp-sourcemaps": "*",
+    "mithril": "*",
+    "mithrilify": "*",
+    "optimize-js": "*",
+    "gulp-run": "*",
+    "gulp-jsmin": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

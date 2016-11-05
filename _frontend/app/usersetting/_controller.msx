@@ -1,0 +1,21 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+
+var UserSettingController = function() {
+  var ctrl = this;
+  if(wsCtrl.userId.length < 1){
+    m.route("/");
+  } else {
+    ctrl.user = m.prop({});
+    ctrl.setup = function(){
+      rd.setting();
+    };
+    ctrl.request = api.requestWithFeedback2({method: "POST", url: "/settings"}, ctrl.user, ctrl.setup);
+    
+    rd.setting()
+  }
+  
+}
+
+module.exports = UserSettingController;

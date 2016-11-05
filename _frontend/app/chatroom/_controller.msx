@@ -1,0 +1,42 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var ChatRoomController = function() {
+  m.redraw.strategy("diff");
+  $.cookie('url', m.route(), {path: "/"})
+  var ctrl = this;
+  ctrl.param = m.prop(m.route.param("roomId"));
+  wsCtrl.send(wsCtrl.sendData("initChat", {t: "chatrooms"}));
+  
+  var intervalChatRooms = setInterval(function(){
+    wsCtrl.send(wsCtrl.sendData("sub", {t: "chatrooms"}));
+  }, 30000);
+  
+  ctrl.setupHotQuestion = function(){
+    wsCtrl.initHotQuestion = true;
+  };
+  
+  wsCtrl.request2 = api.requestWithFeedback2({method: "GET", url: "/qa/hotquestion" }, wsCtrl.hotQuestion, ctrl.setupHotQuestion);
+  
+  ctrl.onunload = function() {
+    wsCtrl.data.chatrooms = {};
+    wsCtrl.send(wsCtrl.sendData("unSub", {t: "chatrooms"}));
+    clearInterval(intervalChatRooms);
+  };
+  ctrl.roomList = [
+    {id: "all", name: "Room 1", description: ""},
+    {id: "02", name: "Room 2", description: ""},
+    {id: "03", name: "Room 3", description: ""},
+    {id: "04", name: "Room 4", description: ""},
+    {id: "05", name: "Room 5", description: ""},
+    //{id: "02", name: "Room 2", description: "High intermediate level of English"},
+    //{id: "03", name: "Room 3", description: "Advanced level of English"},
+    //{id: "04", name: "Room 4", description: "Proficient in English"},
+    //{id: "05", name: "Room 5", description: "Upper Intermediate"},
+    //{id: "06", name: "Room 6", description: "Very Advanced"},
+  ];
+  
+  rd.chatroom();
+}
+
+module.exports = ChatRoomController;

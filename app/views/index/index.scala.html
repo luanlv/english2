@@ -1,0 +1,106 @@
+@()(implicit ctx: Context)
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="fragment" content="!">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+
+    <link rel="shortcut icon" href="@routes.Assets.at("favicon.ico")">
+    <title>Demo</title>
+    @views.html.index.other.headjs()
+    @views.html.index.other.spinner()
+  </head>
+
+  <body class="fixed-header menu-pin"
+  id="@ctx.userId.getOrElse("")"
+  name="@ctx.name.getOrElse("")"
+  mv = "@mVersion(ctx.userId)"
+  avatar = "@ctx.avatar.getOrElse("")"
+  style="background: #e8eaed"
+  >
+
+
+    <div class="loaderWr">
+      <div class="loaderPos">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="nav"> </div>
+    <div id="app"> </div>
+
+
+    <div class="red"></div>
+    <script>
+				var static = "";
+				if(document.domain === "localhost"){
+					static = "";
+				} else {
+//					static = "http://static.venglish.net"
+					static = ""
+				}
+				head.load(
+        "https://cdnjs.cloudflare.com/ajax/libs/jquery-powertip/1.2.0/css/jquery.powertip.min.css",
+			  "@{"/assets/plugins/pace/pace-theme-flash.css?v" + assetVersion}" ,
+			  "@{"/assets/plugins/boostrapv3/css/bootstrap.min.css?v" + assetVersion}",
+			  "@{"/assets/plugins/font-awesome/css/font-awesome.css?v" + assetVersion}",
+			  "@{"/assets/plugins/jquery-scrollbar/jquery.scrollbar.css?v" + assetVersion}",
+			  "@{"/assets/plugins/bootstrap-select2/select2.css?v" + assetVersion}",
+			  "@{"/assets/plugins/switchery/css/switchery.min.css?v" + assetVersion}",
+			  "@{"/assets/pages/css/pages-icons.css?v" + assetVersion}",
+			  "@{"/assets/pages/css/pages.css?v" + assetVersion}",
+			  '@jsDev("custom.css")'
+			  );
+//						"https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css");
+				//"https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css");
+				head.load("@jsTagName("vendor/jquery.min.js")")
+						.js("@jsTagName("jquery.cookie.min.js")")
+						.js("@jsTagName("jquery.storageapi.min.js")")
+						.js("https://cdnjs.cloudflare.com/ajax/libs/jquery-powertip/1.2.0/jquery.powertip.min.js")
+						.js("@jsTagName("mithril.js")")
+						.js("@jsTagName("mithril-storage.js")")
+						.js("@jsTagName("mithril-storage.js")")
+						.js("@{"/assets/plugins/pace/pace.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/modernizr.custom.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-ui/jquery-ui.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/boostrapv3/js/bootstrap.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery/jquery-easy.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-unveil/jquery.unveil.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-bez/jquery.bez.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-ios-list/jquery.ioslist.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-actual/jquery.actual.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/bootstrap-select2/select2.min.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/classie/classie.js?v" + assetVersion}")
+						.js("@{"/assets/plugins/switchery/js/switchery.min.js?v" + assetVersion}")
+						.js("@{"/assets/pages/js/pages.js?v" + assetVersion}")
+						.js("@{"/assets/js/scripts.js?v" + assetVersion}")
+
+						.js("@jsTagName("main.js")")
+						.js({app: "@jsDev("app.js")"});
+				head.ready('app', function() {
+					var f1 = function(){
+//						if(typeof(initRoute) == "function" && typeof($) == "function" && $('.red').css('color') != 'rgb(0, 0, 0)'){
+							initRoute();
+							initComponent();
+//						} else {
+//							setTimeout(f1, 10)
+//						}
+					};
+					f1()
+				});
+
+		</script>
+
+
+
+  </body>
+</html>

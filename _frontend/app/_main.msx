@@ -1,0 +1,150 @@
+"user strict";
+
+m.route.mode = "pathname";
+
+var Nav = require('./nav/nav.msx');
+var Home = require('./home/home.msx');
+var Qa = require('./qa/qa.msx');
+var ChatRoom = require('./chatroom/chatroom.msx');
+var User = require('./user/user.msx');
+var UserSetting = require('./usersetting/userSetting.msx');
+var Room = require('./room/room.msx');
+var Footer = require('./footer/footer.msx');
+window.Chat = require('./chat/chat.msx');
+window.Game = require('./game/game.msx');
+
+
+window.route = function( sub ){
+  return {
+    controller : function(){
+      m.redraw.strategy( 'diff' );
+
+      return new sub.controller();
+    },
+    view : sub.view
+  }
+};
+
+window.target = [];
+window.tenant = function(id, module) {
+  target.push(id);
+  return {
+    controller: module.controller,
+    view: function(ctrl) {
+      if(target.indexOf(id) != -1 || id == "all"){
+        target.splice(target.indexOf(id), 1);
+        return module.view(ctrl);
+      } else {
+        return {subtree: "retain"}
+      }
+    }
+  }
+};
+
+window.local = function(id, callback) {
+  return function(e) {
+    id.map(function(component){
+      if(window.target.indexOf(component) < 0) window.target.push(component)
+    });
+    if(callback == undefined) callback = function(){};
+    callback.call(this, e)
+  }
+};
+
+window.rd = {
+  nav: function(callback){
+    local(['nav'], callback).call()
+  },
+  home: function(callback){
+    local(['home'], callback).call()
+  },
+  qa: function(callback){
+    local(['qa'], callback).call()
+  },
+  app: function(callback){
+    local(['app'], callback).call()
+  },
+  right: function(callback){
+    local(['right'], callback).call()
+  },
+  chatroom: function(callback){
+    local(['chatroom'], callback).call()
+  },
+  room: function(callback){
+    local(['room'], callback).call()
+  },
+  user: function(callback){
+    local(['user'], callback).call()
+  },
+  setting: function(callback){
+    local(['setting'], callback).call()
+  },
+  game: function(callback){
+    local(['game'], callback).call()
+  },
+  all: function(callback){
+    local(["home", "game", "qa", "nav", "app", "right", "chatroom", "room", "user", "setting"], callback).call()
+  },
+  list: function(list, callback){
+    local(list, callback).call()
+  }
+};
+
+
+
+//var listId = [];
+//var flag = true;
+
+
+window.Loading = {
+  controller: function(){
+
+  },
+  view: function(){
+    console.log("render loading!!");
+    return m('', 'LOADING')
+  }
+};
+
+vis(function(){
+  if(vis()){
+    console.log("visible")
+    rd.all(function(){m.redraw()});
+  }
+});
+
+var Count = {
+  controller: function(){},
+  view: function(ctrl){
+    return <div className="count">
+      redraw: {JSON.stringify(redraw)}
+      <div>NAV : {redraw.nav}</div>
+      <div>HOME : {redraw.home}</div>
+      <div>DASHBOARD : {redraw.dashboard}</div>
+      <div>RIGHT : {redraw.right}</div>
+      <div>APP : {redraw.app}</div>
+    </div>
+  }
+};
+
+window.initRoute = function(){
+  m.route(document.getElementById('app'), "/", {
+    "/": tenant('home', route(Home)),
+    "/post/:postId": tenant('home', route(Home)),
+    "/qa": tenant('qa', route(Qa)),
+    "/qa/new": tenant('qa', route(Qa)),
+    "/qa/:questionId": tenant('qa', route(Qa)),
+    "/chatroom": tenant('chatroom', route(ChatRoom)),
+    "/chatroom/:roomId": tenant('room', route(Room)),
+    "/settings": tenant('setting', route(UserSetting)),
+    "/@/:user": tenant('user', route(User)),
+  });
+  $('.loaderWr').remove();
+};
+
+window.initComponent = function() {
+  m.mount(document.getElementById('nav'), tenant('nav', Nav));
+  m.mount(document.getElementById('footer'), tenant('footer', Footer));
+  m.mount(document.getElementById('rightContainer'), tenant('right', Chat));
+  m.mount(document.getElementById('game'), tenant('game', Game));
+}

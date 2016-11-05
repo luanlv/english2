@@ -1,0 +1,11 @@
+var RoomController = require('./_controller.msx');
+var RoomView = require('./_view.msx');
+
+var Room = {
+  controller: RoomController,
+  view: RoomView
+};
+
+
+
+module.exports = Room;

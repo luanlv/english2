@@ -1,0 +1,74 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = require('./_partial.msx');
+
+var ChatRoomView = function(ctrl) {
+  return (
+      <div className="ui grid main-content">
+        <div className="eleven wide column">
+          <div className="ui segment segWr mh500">
+            <div className="ui grid">
+              {ctrl.roomList.map(function(room){
+                return (
+                    <div className="sixteen wide column">
+                      <div className="ui segment">
+                        <div className="ui relaxed divided list">
+                          <a href={"/chatroom/" + room.id} className="item"
+                             config={m.route}
+                          >
+
+                    <span className="fr">
+                      <div className="item">
+                        <i className="tiny users left middle aligned icon"
+                        >{wsCtrl.getRooms(room.id).u}</i>
+                      </div>
+                      <i className="tiny plug left middle aligned icon"
+                      >
+                        {wsCtrl.getRooms(room.id).c}
+                      </i>
+                    </span>
+                            
+                            <i className="large pointing right middle aligned icon"></i>
+                            <div className="content">
+                              <div className="header">{room.name}</div>
+                              <div className="description">{room.description}</div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                )
+              })}
+            </div>
+            
+            
+            
+            
+            {Partial.create()}
+          </div>
+        </div>
+        <div className="five wide column mh500">
+          <div className="ui  home-post-Wr mh500">
+            <div className="trending">
+              <h3>Câu hỏi HOT</h3>
+              {!wsCtrl.initHotQuestion?(
+                  "loading !!"
+              ):(
+                  <ul>
+                    {wsCtrl.hotQuestion().map(function(question){
+                      return (<li>
+                        <a className="route" href={"/qa/" + question.id}>{question.question}</a>
+                      </li>)
+                    })}
+                  </ul>
+              )}
+            </div>
+          
+          </div>
+        </div>
+      </div>
+  )
+}
+
+module.exports = ChatRoomView;

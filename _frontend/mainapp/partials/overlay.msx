@@ -1,0 +1,217 @@
+
+var Overlay = function(ctrl){
+  return  m(".overlay.hide[data-pages='search']",
+      m(".overlay-content.has-results.m-t-20",
+          [
+            m(".container-fluid",
+                [
+                  m("img.overlay-brand[alt='logo'][data-src='/assets/img/logo.png'][data-src-retina='/assets/img/logo_2x.png'][height='22'][src='/assets/img/logo.png'][width='78']"),
+                  m("a.close-icon-light.overlay-close.text-black.fs-16[href='#']",
+                      m("i.pg-close")
+                  )
+                ]
+            ),
+            m(".container-fluid",
+                [
+                  m("input.no-border.overlay-search.bg-transparent[autocomplete='off'][id='overlay-search'][placeholder='Search...'][spellcheck='false']"),
+                  m("br"),
+                  m(".inline-block",
+                      m(".checkbox.right",
+                          [
+                            m("input[checked='checked'][id='checkboxn'][type='checkbox'][value='1']"),
+                            m("label[for='checkboxn']",
+                                [
+                                  m("i.fa.fa-search"),
+                                  " Search within page"
+                                ]
+                            )
+                          ]
+                      )
+                  ),
+                  m(".inline-block.m-l-10",
+                      m("p.fs-13",
+                          "Press enter to search"
+                      )
+                  )
+                ]
+            ),
+            m(".container-fluid",
+                [
+                  m("span",
+                      m("strong",
+                          "suggestions :"
+                      )
+                  ),
+                  m("span[id='overlay-suggestions']"),
+                  m("br"),
+                  m(".search-results.m-t-40",
+                      [
+                        m("p.bold",
+                            "Pages Search Results"
+                        ),
+                        m(".row",
+                            [
+                              m(".col-md-6",
+                                  [
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.bg-success.text-white.inline.m-t-10",
+                                              m("div",
+                                                  m("img[alt=''][data-src='/assets/img/profiles/avatar.jpg'][data-src-retina='/assets/img/profiles/avatar2x.jpg'][height='50'][src='/assets/img/profiles/avatar.jpg'][width='50']")
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      m("span.semi-bold.result-name",
+                                                          "ice cream"
+                                                      ),
+                                                      " on pages"
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via john smith"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    ),
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.bg-success.text-white.inline.m-t-10",
+                                              m("div",
+                                                  "T"
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      m("span.semi-bold.result-name",
+                                                          "ice cream"
+                                                      ),
+                                                      " related topics"
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via pages"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    ),
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.bg-success.text-white.inline.m-t-10",
+                                              m("div",
+                                                  m("i.fa.fa-headphones.large-text.")
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      m("span.semi-bold.result-name",
+                                                          "ice cream"
+                                                      ),
+                                                      " music"
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via pagesmix"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    )
+                                  ]
+                              ),
+                              m(".col-md-6",
+                                  [
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.bg-info.text-white.inline.m-t-10",
+                                              m("div",
+                                                  m("i.fa.fa-facebook.large-text.")
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      m("span.semi-bold.result-name",
+                                                          "ice cream"
+                                                      ),
+                                                      " on facebook"
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via facebook"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    ),
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.bg-complete.text-white.inline.m-t-10",
+                                              m("div",
+                                                  m("i.fa.fa-twitter.large-text.")
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      "Tweats on",
+                                                      m("span.semi-bold.result-name",
+                                                          " ice cream"
+                                                      )
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via twitter"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    ),
+                                    m("[class='']",
+                                        [
+                                          m(".thumbnail-wrapper.d48.circular.text-white.bg-danger.inline.m-t-10",
+                                              m("div",
+                                                  m("i.fa.fa-google-plus.large-text.")
+                                              )
+                                          ),
+                                          m(".p-l-10.inline.p-t-5",
+                                              [
+                                                m("h5.m-b-5",
+                                                    [
+                                                      "Circles on",
+                                                      m("span.semi-bold.result-name",
+                                                          " ice cream"
+                                                      )
+                                                    ]
+                                                ),
+                                                m("p.hint-text",
+                                                    "via google plus"
+                                                )
+                                              ]
+                                          )
+                                        ]
+                                    )
+                                  ]
+                              )
+                            ]
+                        )
+                      ]
+                  )
+                ]
+            )
+          ]
+      )
+  )
+};
+
+module.exports = Overlay;

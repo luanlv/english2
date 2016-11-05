@@ -1,0 +1,211 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+var Partial = require('./_partial.msx');
+var Partial2 = require('../room/_partial.msx');
+
+
+var HomeView = function(ctrl) {
+  api.rd("home:" + redraw.home);
+  return (
+  <div className="ui grid  main-content">
+    <div className="eight wide column">
+      {!wsCtrl.data.post.init?(
+          (wsCtrl.userId.length>0)?(
+              <div className="ui home-post-Wr ">
+                <div className="ui segment loading mh300 noBor noSha">
+                
+                </div>
+              </div>
+          ):(
+              <div className="ui home-post-Wr ">
+                <div className="ui segment mh300 noBor noSha" style="text-align: center">
+                  Please login to see posts!
+                </div>
+              </div>
+          )
+      ):(
+          (m.route.param("postId") !== undefined)?(
+              Partial.ShowPost(ctrl)
+          ):[
+            <div className="ui home-post-Wr ">
+              <div className="ui form postWr postContainer">
+                <div className="field">
+                       <textarea className="auto-size new-post"
+                                 rows="2"
+                                 placeholder="Bạn đang nghĩ gì?"
+                                 config={function (element, isInit, ctx) {
+
+                                   if(!isInit) {
+                                     if(wsCtrl.userId.length == 0){
+                                       $(element).on('click input', function(){
+                                         api.signin();
+                                         element.value = ''
+                                       })
+                                     }
+
+                                     $(element).textareaAutoSize();
+                                     $(element).on('input', function(){
+                                       ctrl.inputPost($(element).val())
+                                     })
+                                   }
+                                   element.value = ctrl.inputPost();
+                                   if(element.value.length<1){
+
+                                     //$(element).css('height', '41px')
+                                   }
+                                 }
+                                 }
+                                 onkeypress={function(e){
+                                   if(e.keyCode == 13 && !e.shiftKey) {
+                                     m.redraw.strategy("none");
+                                     if (ctrl.inputPost().length < 1) {
+                                       return false;
+                                     }
+                                   }else{
+                                     m.redraw.strategy("none");
+                                     if(e.keyCode == 13 && e.shiftKey && ctrl.inputPost().length < 1){
+                                       return false;
+                                     }
+                                   }
+                                 }
+                                 }
+                       >{ctrl.inputPost()}</textarea>
+                </div>
+                <div className="post">
+                  <button className="ui mini primary button"
+                          onclick={function(e){
+                            if(ctrl.inputPost().trim().length > 0){
+                              m.redraw.strategy("none");
+                              $('.postWr').addClass('loading');
+                              $.ajax({
+                                type: "POST",
+                                url: "/post",
+                                data: JSON.stringify({content: ctrl.inputPost()}),
+                                contentType: "application/json",
+                                dataType: "text",
+                                success: function(data){
+                                  ctrl.inputPost("");
+                                  $('.new-post').css('height', 41);
+                                  $('.postWr').removeClass('loading');
+                                  rd.home(function(){m.redraw()})
+                                }
+                              });
+                            }
+                          }}
+                  >Gửi</button>
+                  <span className="clear"></span>
+                </div>
+              </div>
+            </div>,
+            wsCtrl.data.post.list.map(function(post){
+              return (
+                  Partial.post(post, ctrl)
+              )
+            }),
+            (wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published === 1460882188511)?"":(
+                <div className="ui button"
+                   onclick={
+                     function(){
+                       console.log(wsCtrl.data.post.list[wsCtrl.data.post.list.length-1])
+                       wsCtrl.send(wsCtrl.sendData("morePost", {time: wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published}));
+                     }
+                   }
+            >More post</div>)
+          ]
+      )}
+    
+    
+    </div>
+    <div className="eight wide column">
+      <div className="ui  home-post-Wr room-chat">
+        <div className="ui segment segWr">
+          <div className="ui padded grid">
+            <div className="sixteen wide  column pad-bot0">
+              {Partial2.Comments(ctrl)}
+            </div>
+          </div>
+          <div className="ui padded grid ">
+            <div className="sixteen wide column pad-top0">
+              <div className="ui divider"></div>
+              <div className="ui comments mar0">
+                <div className="comment">
+                  <a className="avatar">
+                    <img src={(wsCtrl.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + wsCtrl.avatar):("/assets/avatar/2.jpg")}/>
+                  </a>
+                  <div className="ui form content">
+                    <div className="field" style="display:inline">
+                        <textarea rows="1" style="max-height: 150px"
+                                  config={function (element, isInit, ctx) {
+                                    if(!isInit) {
+                                      if(wsCtrl.userId.length == 0){
+                                        $(element).on('click input', function(){
+                                          api.signin();
+                                          element.value = ''
+                                        })
+                                      } else {
+                                        $(element).on('input', function(){
+                                          wsCtrl.inputChat(ctrl.id)($(element).val())
+                                        });
+                                      }
+                                      var boxNode = document.getElementsByClassName('box-comment')[0];
+                                      var box = $('.box-comment');
+                                      var curHeight = box.height();
+                                      
+                                      $(element).textareaAutoSize();
+                                      $(element).attrchange({
+                                        //trackValues: true,
+                                        callback: function (event) {
+                                          if (box.scrollTop() + box.innerHeight() >= box.prop('scrollHeight')) {
+                                            box.css('height', curHeight + 36 - $(element).outerHeight());
+                                            boxNode.scrollTop = boxNode.scrollHeight;
+                                          } else {
+                                            box.css('height', curHeight + 36 - $(element).outerHeight());
+                                          }
+        
+                                        }
+                                      });
+    
+    
+                                    }
+                                    element.value = wsCtrl.inputChat(ctrl.id)();
+                                    if(element.value.length<1){
+                                      $(element).css('height', '36.4286px')
+                                    }
+                                  }
+                                  }
+                                  onkeypress={function(e){
+                                    if(e.keyCode == 13 && !e.shiftKey) {
+                                      m.redraw.strategy("none");
+                                      if (wsCtrl.inputChat(ctrl.id)().length < 1) {
+                                        console.log("chat length < 1")
+                                        return false;
+                                      } else {
+                                        var source = e.target || e.srcElement;
+                                        ctrl.add();
+                                        return false;
+                                      }
+                                    }else{
+                                      m.redraw.strategy("none");
+                                      if(e.keyCode == 13 && e.shiftKey && wsCtrl.inputChat(ctrl.id)().length < 1){
+                                        return false;
+                                      }
+                                    }
+                                  }
+                                  }
+                                  placeholder="Click here to type a chat message"
+                        >{}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  )
+}
+
+module.exports = HomeView;

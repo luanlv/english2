@@ -1,0 +1,49 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = require('./_partial.msx');
+
+var QaView = function(ctrl) {
+  return (
+      <div id="qa" className="ui grid main-content">
+        <div className="eleven wide column mh500">
+          {(m.route.param('questionId') !== undefined)?(
+              !wsCtrl.requestQa.ready()?(
+                  <div className="ui loading segment mh500"></div>
+              ):(
+                  Partial.viewQuestion(ctrl, wsCtrl.question().question, wsCtrl.question().answer)
+              )
+          ):(
+              (wsCtrl.data.qa.init)?(
+                  Partial.list(ctrl, wsCtrl.data.qa.list)
+              ):(
+                  <div className="ui loading segment mh500"></div>
+              )
+          
+          
+          )}
+        </div>
+        <div className="five wide column mh500">
+          <div className="ui  home-post-Wr mh500">
+            <div className="trending">
+              <h3>Câu hỏi HOT</h3>
+              {!wsCtrl.initHotQuestion?(
+                  "loading !!"
+              ):(
+                  <ul>
+                    {wsCtrl.hotQuestion().map(function(question){
+                      return (<li>
+                        <a className="route" href={"/qa/" + question.id}>{question.question}</a>
+                      </li>)
+                    })}
+                  </ul>
+              )}
+            </div>
+          
+          </div>
+        </div>
+      </div>
+  )
+}
+
+module.exports = QaView;

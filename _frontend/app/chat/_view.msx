@@ -1,0 +1,218 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+// var Partial = require('./_partial.msx');
+
+
+var ChatView = function(ctrl) {
+  api.rd("redraw Chat: " + redraw.right);
+  //if(wsCtrl.data.chat[0] != undefined) console.log(wsCtrl.data.chat);
+  redraw.right++;
+  return (
+      <div>
+        <div id="dock-icon"
+             className={(wsCtrl.friendFlag?"hide":"")}
+             onclick={function(){
+               wsCtrl.friendFlag = true;
+               rd.right(function(){m.redraw()})
+             }}
+        >
+          <i className="blue huge comments outline icon"></i>
+        </div>
+        {wsCtrl.userId.length>0?(
+            ctrl.showChatDock?(
+                <div id="user-list" className={"ui gray segment pad0 sha3 mar0 " + (wsCtrl.friendFlag?("user-show"):("user-hide"))}
+                
+                >
+            <span class="dock-close"
+                  onclick={function(){
+                    wsCtrl.friendFlag = false;
+                    rd.right(function(){m.redraw()})
+                  }}
+            >
+              <i class="large remove icon"></i>
+            </span>
+                  <div className="ui segment  noSha noBor pad0">
+                    <div className="ui top attached tabular two item  menu" style="margin-top: 5px;">
+                      <a className={(!wsCtrl.data.showOnline?("active"):("")) + " item pad0"}
+                         onclick={function(){
+                           wsCtrl.data.showOnline = false;
+                           if(!wsCtrl.data.initAllFriends) wsCtrl.send(wsCtrl.sendData("getAllFriends", {}));
+                           rd.right(function(){m.redraw()})
+                         }}
+                      >
+                        Bàn bè
+                      </a>
+                      <a className={(wsCtrl.data.showOnline?("active"):("")) + " item pad0"}
+                         onclick={function(){
+                           wsCtrl.data.showOnline = true;
+                           rd.right(function(){m.redraw()})
+                         }}
+                      >
+                        Trực tuyến ({wsCtrl.data.userOnline.length})
+                      </a>
+                    
+                    </div>
+                    <div className={ ((!wsCtrl.data.showOnline && !wsCtrl.data.initAllFriends)?("loading"):("")) + " ui segment  noSha noBor pad0 mh500"}>
+                      <div className=" ui tiny middle aligned selection list noSha noBor ">
+                        {wsCtrl.data.showOnline?(wsCtrl.data.userOnline.map(function(user){
+                          return (
+                              <a className=" item ulptr" href={"/@/" + user.id}
+                                 config={function(el, isInited){
+                                   $(el).click(function(){
+                                     if(wsCtrl.userId.length > 0 && wsCtrl.userId !== user.id) ctrl.makechat(user)
+                                   });
+                                
+                                   if(!isInited){
+                                     $(el).click(function(){
+                                       return false;
+                                     })
+                                   }
+                                 }
+                                 }
+                              >
+                                <img className="ui avatar image" src={(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
+                                <div className="content">
+                                  <div className="header">{user.name}</div>
+                                </div>
+                              </a>
+                          )
+                        })):(wsCtrl.data.allFriends.map(function(user){
+                          return (
+                              <a className=" item ulpt" href={"/@/" + user.id}
+                                 config={function(el, isInited){
+                                   $(el).click(function(){
+                                     if(wsCtrl.userId.length > 0 && wsCtrl.userId !== user.id) ctrl.makechat(user)
+                                   });
+                                
+                                   if(!isInited){
+                                     $(el).click(function(){
+                                       return false;
+                                     })
+                                   }
+                                 }
+                                 }
+                              >
+                                <img className="ui avatar image" src={(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
+                                <div className="content">
+                                  <div className="header">{user.name}</div>
+                                </div>
+                              </a>
+                          )
+                        }))
+                          
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>):(<div id="user-list">
+              <div className="ui top attached inverted header chat-title"
+                   onclick={function(){rd.right(ctrl.toggleChatDock())}}
+              >Online</div>
+            </div>)):""
+        }
+        
+        <div id="dock-bot" class={(wsCtrl.friendFlag?("uShow"):("uHide"))}>
+          {wsCtrl.data.chat.map(function(chat, rank){
+            return (!chat.display)?"":(
+                <div className={"chatWr " + (chat.hide?"w2":"w1")}>
+                  <div className={"ui top attached blue inverted header chat-title2" + (chat.read?"":" unread")}
+                       style={!chat.hide?"display: none":""}
+                       onclick={function(){rd.right(ctrl.toggleChat(rank))}}
+                  >{chat.user.name}
+                    <i className="remove icon close-chat"
+                       onclick={function(){rd.right(ctrl.stopChat(rank))}}
+                    ></i>
+                  </div>
+                  
+                  <div className="raised chatboxWr"
+                       style={chat.hide?"display: none":""}> <div className="ui segment noSha">
+                    <div className={"ui top attached inverted header chat-title sha2" + (chat.read?"":" unread")}
+                         onclick={function(){rd.right(ctrl.toggleChat(rank))}}
+                    >
+                      {chat.user.name}
+                      <i className="setting icon setting-chat"></i>
+                      <i className="remove icon close-chat"
+                         onclick={function(){rd.right(ctrl.stopChat(rank))}}
+                      ></i>
+                    </div>
+                    <div className="ui form">
+                      <div className="field">
+                        
+                        <div className="chat-box"
+                             config={api.scrollBottom}
+                             onclick={local(['nav', 'right'],function(){api.markRead(rank)})}
+                        >
+                          {chat.chat.map(function(item, num){
+                            return <div>
+                              {chat.init?(<div className="loading_chat">"Loading previous ..."</div>):""}
+                              <div className={(item.f.id == wsCtrl.userId)?"ui left pointing basic label chat-left": "ui right pointing basic label chat-right"}>
+                                <div className="mes">{m.trust(api.post(item.mes))}</div>
+                              </div>
+                            </div>
+                          })}
+                        </div>
+                        
+                        <textarea className="auto-size new-comment" id={chat.user.id} rows="1"
+                                  onfocus={function(){rd.right(function(){api.markRead(rank)})}}
+                                  config={function (element, isInit, ctx) {
+                                    if(!isInit) {
+                                      $(element).on('input', function(){
+                                        wsCtrl.data.chat[rank].input($(element).val())
+                                      })
+                                      $(element).textareaAutoSize();
+                                      $(element).attrchange({
+                                        //trackValues: true,
+                                        callback: function (event) {
+                                          var prev = element.previousSibling;
+                                          var $prev = $(prev);
+                                          if ($prev.scrollTop() + $prev.innerHeight() >= element.previousSibling.scrollHeight) {
+                                            $prev.css('height', 273 - $(element).outerHeight());
+                                            prev.scrollTop = prev.scrollHeight;
+                                          } else {
+                                            $prev.css('height', 273 - $(element).outerHeight())
+                                          }
+                                        }
+                                      });
+                                    }
+                                    element.value = wsCtrl.data.chat[rank].input();
+                                    if(element.value.length<1){
+                                      $(element).css('height', '30px')
+                                    }
+                                  }
+                                  }
+                                  onkeypress={function(e){
+                                    if(e.keyCode == 13 && !e.shiftKey) {
+                                      m.redraw.strategy("none");
+                                      //if(wsCtrl.data.chat[rank].input() != undefined) console.log(wsCtrl.data.chat[rank].input().length + "=====")
+                                      if (wsCtrl.data.chat[rank].input().length < 1) {
+                                        //console.log("length < 1")
+                                        return false;
+                                      } else {
+                                        var source = e.target || e.srcElement;
+                                        var prev = source.previousSibling;
+                                        prev.scrollTop = prev.scrollHeight;
+                                        ctrl.add(rank);
+                                        //$(source).val = '';
+                                        return false;
+                                      }
+                                    }else{
+                                      m.redraw.strategy("none");
+                                      if(e.keyCode == 13 && e.shiftKey && wsCtrl.data.chat[rank].input().length < 1){
+                                        return false;
+                                      }
+                                    }
+                                  }
+                                  }
+                        >{}</textarea>
+                      </div>
+                    </div>
+                  </div></div>
+                </div>
+            )
+          })}
+        </div>
+      </div>
+  )
+}
+
+module.exports = ChatView;

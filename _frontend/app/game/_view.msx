@@ -1,0 +1,26 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+var Partial = require('./_partial.msx');
+var Partial2 = require('../room/_partial.msx');
+
+
+var GameView = function(ctrl) {
+  return (
+      <div className={"gameBg " + (wsCtrl.game?"active":"")}>
+      <div className="gameWr">
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        <div className="game"> gaming </div>
+        
+      </div>
+      </div>
+  )
+}
+
+module.exports = GameView;

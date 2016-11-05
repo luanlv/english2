@@ -1,0 +1,105 @@
+var wsCtrl = require('../../_wsCtrl.js');
+var api = require('../../_api.msx');
+
+var MessageButton = function(ctrl){ return [
+      <a className="item nofity  message-button pre-show-messages fix-icon" data-content="Tin nhắn" data-position="bottom right"
+         onclick={function(){rd.nav(ctrl.displayNofity());}}
+         config={function(el, isInited){
+              if(!isInited){
+                var prepPopup = $(el);
+                prepPopup.popup({inline: true, on: 'manual'});
+                prepPopup.hover(function(){
+                  if(!wsCtrl.data.makeFriend.display){prepPopup.popup('show');}
+                });
+                prepPopup.on('click mouseleave', function(){
+                  prepPopup.popup('hide');
+                });
+              }
+             }}
+      >
+        <a href="javascript:void(0)"><i className="large mail icon"></i></a>
+        {(wsCtrl.data.notify.n>0)?(<div className="floating ui red label num-label">{wsCtrl.data.notify.n}</div>):""}
+      </a>,
+      <div className="notifyWr">
+        {!wsCtrl.data.notify.display?"":(
+        <div className="inNotify"
+          config={function(el, isInit){
+            if(!isInit){
+               $(el).on('mouseleave', function(){
+                   if(!$('.menu:hover').length > 0){
+                      $(el).unbind('mouseleave');
+                      $('.menu').unbind('mouseleave');
+                      wsCtrl.data.notify.display = false;
+                      rd.nav(function(){m.redraw()})
+                   }
+                });
+
+               $('.menu').on('mouseleave', function(){
+                  if(!$(el).filter(':hover').length > 0){
+                    $(el).unbind('mouseleave');
+                    $('.menu').unbind('mouseleave');
+                    wsCtrl.data.notify.display = false;
+                    rd.nav(function(){m.redraw()})
+                 }
+                })
+            }
+          }}
+        >
+          <div className="corner-right"><div className="tr"></div></div>
+          <div className="ui raised  attracted segment notify-content sha3 pad0">
+            <div className="ui top attracted label tran">
+              Inbox ({wsCtrl.data.notify.n})
+            </div>
+            {!wsCtrl.data.notify.init?"LOADING":(
+            <div>
+              {
+                  wsCtrl.data.notify.notifyMessage.map(function(mes){
+                      return (
+                      <div className="notifyMes clearfix"
+                           config={
+                                    function(el, isInit, ctx){
+
+                                      $(el).click(function(){
+                                        local(['nav', 'right'], function(){
+                                          wsCtrl.data.notify.display = !wsCtrl.data.notify.display;
+                                          var pos = wsCtrl.getPosChat(mes.user);
+                                          if(wsCtrl.data.chat[pos].display == false){
+                                            wsCtrl.data.chat[pos].display = true;
+                                            wsCtrl.data.chat[pos].hide = false;
+                                          } else if(wsCtrl.data.chat[pos].hide == true){
+                                            wsCtrl.data.chat[pos].hide = false;
+                                          } else {
+                                          }
+                                          if(mes.n > 0) wsCtrl.data.chat[pos].read = false;
+                                          api.focusById(wsCtrl.data.chat[pos].user.id);
+                                          m.redraw();
+                                        }).call()
+                                      });
+                                    }
+                                 }
+                      >
+                        <div className="nleft"></div>
+                        <div className="nright">
+                          <span className="notifyName">
+                            {mes.user.name}
+                          </span>
+                          <span className="mesNumber">
+                             ({mes.n})
+                          </span>
+                          <div className="lastMes">
+                            {mes.lm.mes}
+                          </div>
+                        </div>
+                      </div>
+                          )
+                      })
+                  }
+            </div>
+                )}
+          </div>
+        </div>
+            )}
+      </div>
+] }
+
+module.exports = MessageButton;

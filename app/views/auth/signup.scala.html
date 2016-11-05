@@ -1,0 +1,36 @@
+@(form: Form[_], captcha: lila.common.Captcha2)(implicit ctx: Context)
+
+	@auth.layout(
+		title = trans.signUp.str(),
+		zen = true) {
+		<div class="ui segment">
+			<div class="ui form">
+				<h1 class="lichess_title">Signup!</h1>
+				<form action="@routes.Auth.signupPost" method="POST">
+					<div>
+						@auth.formFields(form("username"), form("password"), form("email").some)
+						<div class="field">
+							@captcha.question
+							<input type="hidden" name="qId" value="@captcha.qId">
+							<input type="text" name="solution" value>
+						</div>
+						@errMsg(form)
+						<div class="field" data-icon="!">&nbsp;
+							<small>
+								By registering, you agree to ....
+							</small>
+						</div>
+						<div>
+							<button type="submit" class="ui teal button" data-icon="F"> @trans.signUp()</button>
+						</div>
+						<div>
+							<br>
+							Already Have an Account?
+								<a href="javascript:void(0)" onclick="signin()"> @trans.signIn()</a>
+						</div>
+					</div>
+					<input type="hidden" class="referrer" name="_referrer" value="@currentUrl" />
+				</form>
+			</div>
+		</div>
+	}

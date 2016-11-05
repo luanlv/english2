@@ -1,0 +1,81 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = {}
+
+Partial.avatarWr = function(ctrl){
+  return (
+      <div className="ui segment avatarWr">
+        <div className="ui special  cards"
+             config={function(el, isInited, ctx){
+               if(!isInited){
+                 $('.special.cards .image').dimmer({
+                   on: 'hover'
+                 });
+               }
+             }}
+        >
+          
+          <div className="card">
+            <div className="blurring dimmable image">
+              <div className="ui dimmer">
+                <div className="content">
+                  <div className="center">
+                    <form id="formUpload" enctype="multipart/form-data" action="/upload/image" method="post">
+                      <input className="avatar-upload" name="picture" id="picture" type="file" accept="image/*"
+                      
+                             config={function(el, isInited){
+                               if(!isInited){
+                                 $(el).change(function (){
+                                   var _URL = window.URL || window.webkitURL;
+                                   var file, img;
+                                   if ((file = this.files[0])) {
+                                     img = new Image();
+                                     img.onload = function () {
+                                
+                                       if(this.width >= 180 && this.height >=180){
+                                         $('.avatarWr').addClass('loading');
+                                         jQuery.each(jQuery('#picture')[0].files, function(i, file) {
+                                           data.append('file-'+i, file);
+                                         });
+                                         jQuery.ajax({
+                                           url: '/upload/image',
+                                           data: data,
+                                           cache: false,
+                                           contentType: false,
+                                           processData: false,
+                                           type: 'POST',
+                                           success: function(data){
+                                             var url = wsCtrl.static + "/getimage/small/" + data;
+                                             $('#avatarImg').attr('src', url);
+                                             $('.avatarWr').removeClass('loading');
+                                             wsCtrl.avatar = data;
+                                           }
+                                         });
+                                       } else {
+                                         alert("Chiều rộng và chiều dài của ảnh phải lớn hơn 180px");
+                                       }
+                                     };
+                                     img.src = _URL.createObjectURL(file);
+                                   }
+                                   var data = new FormData();
+                            
+                                 });
+                               }
+                             }}
+                      />
+                    </form>
+                  
+                  </div>
+                </div>
+              </div>
+              <img id="avatarImg" src={(ctrl.user().avatar.length>0)?(wsCtrl.static + "/getimage/small/" + ctrl.user().avatar):"/assets/img/user.jpg"} width="180" height="180"/>
+            </div>
+          </div>
+        </div>
+      
+      </div>
+  )
+}
+
+module.exports = Partial;

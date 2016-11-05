@@ -1,0 +1,447 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = {}
+
+Partial.list = function(ctrl, questions){
+  return (
+      <div className="list-question">
+        <div className="ui top attached tabular menu">
+          <a className={((m.route() === '/qa')?"active":"") + " item route" }  href="/qa">
+            Danh sách
+          </a>
+          {/*<a className="item">*/}
+          {/*Hot Questions*/}
+          {/*</a>*/}
+          <a className={((m.route() === '/qa/new')?"active":"") + " item route"} href="/qa/new">
+            Thêm câu hỏi mới
+          </a>
+          {/*<div className="right menu">*/}
+          {/*<div className="item">*/}
+          {/*<div className="ui transparent icon input">*/}
+          {/*<input type="text" placeholder="Search users..." />*/}
+          {/*<i className="search link icon"></i>*/}
+          {/*</div>*/}
+          {/*</div>*/}
+          {/*</div>*/}
+        </div>
+        <div className="ui bottom attached segment ">
+          {(m.route() !== '/qa/new')?(
+              <div className="ui large relaxed divided list">
+                {questions.map(function(question){
+                  return (
+                      Partial.question(question)
+                  )
+                })}
+              </div>
+          ):(
+              <form className="ui form" method="post" action="/qa/new"
+                    config={function(el, isInited){
+                      if(!isInited){
+                        $(el).on('submit', function(e) {
+                          e.preventDefault();
+                          var formData = $(this).serializeObject();
+                          $(el).addClass('loading');
+                          $.ajax({
+                            type: "POST",
+                            url: $(this).attr('action'),
+                            data: JSON.stringify(formData),
+                            contentType: "application/json"
+                          })
+                              .done(function(data, textStatus, jqXHR){
+                                el.reset();
+                                $(el).removeClass('loading');
+                                m.route("/qa")
+                              })
+                              .fail(function(jqXHR, textStatus, errorThrown){
+                                console.log("Ajax problem: " + textStatus + ". " + errorThrown);
+                              });
+                        });
+                      }
+                    }}
+              >
+                <div className="field">
+                  <label>Từa đề</label>
+                  <input name="question" type="text" />
+                </div>
+                <div className="field">
+                  <label>Nội dung</label>
+                  <textarea name="description" rows="2" style="margin-top: 0px; margin-bottom: 0px; height: 58px;"></textarea>
+                </div>
+                <button type="submit" className="ui primary button">Ask</button>
+              </form>
+          )
+          }
+        </div>
+      </div>
+  )
+};
+
+Partial.question = function(question){
+  return (
+      <div className="item">
+        <div className="mini ui statistics">
+          <div className=" red statistic">
+            <div className="value">
+              {question.voteCount}
+            </div>
+            <div className="label">
+              votes
+            </div>
+          </div>
+          <div className="orange statistic">
+            <div className="value">
+              {question.answerCount}
+            </div>
+            <div className="label">
+              Answers
+            </div>
+          </div>
+          <div className="yellow statistic">
+            <div className="value">
+              {question.views}
+            </div>
+            <div className="label">
+              Views
+            </div>
+          </div>
+        </div>
+        <div className="content">
+          <a className="header route"
+             href={"/qa/" + (question.id)}
+          >
+            {question.question}
+          </a>
+          {<question className="description"></question>}
+        </div>
+      </div>
+  )
+};
+
+Partial.viewQuestion = function(ctrl, question, answers){
+  return(
+      <div className="ui">
+        <div className="content">
+          <div className="ui grid qaWr">
+            <div className="one wide column voteWr">
+              <div className="ui relaxed list">
+                <a className="item"
+                   onclick={function(e){
+                     e.preventDefault();
+                     var data ;
+                     if(question.votes === undefined){
+                       data = "up"
+                     } else {
+                       if(question.votes[0].vote === -1){
+                         data = "reup"
+                       }
+                     }
+                     if(question.votes === undefined || (question.votes !== undefined && question.votes[0].vote === -1) ){
+                       $.ajax({
+                         type: "POST",
+                         url: "/vote/question/" + question.id,
+                         data: JSON.stringify({vote: data}),
+                         contentType: "application/json",
+                         dataType: "text",
+                         success: function(res){
+                           if(res === "voted"){
+                             wsCtrl.question().question.votes = [{userId: wsCtrl.userId, vote: 1}]
+                             if(data === "up") question.voteCount +=1;
+                             if(data === "reup") question.voteCount +=2;
+                             rd.qa(function(){m.redraw()})
+                           }
+                         }
+                       });
+                     }
+                   }}
+                >
+                  <i className={((question.votes !== undefined && question.votes[0].vote === 1)?"blue":"")  + " big caret up icon"}></i>
+                </a>
+                <div className="item">
+                  <span className="numVote">{question.voteCount}</span>
+                </div>
+                <a className="item"
+                   onclick={function(e){
+                     e.preventDefault();
+                     var data ;
+                     if(question.votes === undefined){
+                       data = "down"
+                     } else {
+                       if(question.votes[0].vote === 1){
+                         data = "redown"
+                       }
+                     }
+                     if(question.votes === undefined || (question.votes !== undefined && question.votes[0].vote === 1) ){
+                       $.ajax({
+                         type: "POST",
+                         url: "/vote/question/" + question.id,
+                         data: JSON.stringify({vote: data}),
+                         contentType: "application/json",
+                         dataType: "text",
+                         success: function(res){
+                           if(res === "voted"){
+                             wsCtrl.question().question.votes = [{userId: wsCtrl.userId, vote: -1}]
+                             if(data === "down") question.voteCount -=1;
+                             if(data === "redown") question.voteCount -=2;
+                             rd.qa(function(){m.redraw()})
+                           }
+                         }
+                       });
+                     }
+                   }}
+                >
+                  <i className={((question.votes !== undefined && question.votes[0].vote === -1)?"blue":"")  +  " big caret down icon"}></i>
+                </a>
+              </div>
+            </div>
+            <div className="fifteen wide column">
+              
+              <div className="ui middle aligned divided list qa">
+                <div className="item question">
+                  <div className="ui large header">{m.trust(api.post(question.question))}</div>
+                  <div className="content">
+                    {question.description}
+                  </div>
+                  <div class="content clearfix">
+                    <a class="right floated author route ulpt" href={"/@/" + question.user.id}>
+                      <img class="ui avatar image" src={(question.user.avatar.length>0)?("/getimage/small/" + question.user.avatar):wsCtrl.defaultAvata}/> {question.user.name}
+                    </a>
+                  </div>
+                </div>
+                
+                {question.comment.map(function(comment){
+                  return (
+                      <div className="item comment">
+                        <div className="content">
+                          {comment.comment} - <a class="route ulpt" href={"/@/" + comment.user.id}>{comment.user.name}</a>
+                        </div>
+                      </div>
+                  )
+                })}
+                
+                
+                <div className="item">
+                  {Partial.comment(ctrl, ctrl.addComment, question.id, ctrl.getInput(question.id), "q")}
+                </div>
+              </div>
+            </div>
+            <h2 className="">Answers</h2>
+          </div>
+          
+          
+          {answers.map(function(answer){
+            return(
+                <div className="ui grid qaWr">
+                  <div className="one wide column voteWr">
+                    <div className="ui relaxed list">
+                      <a className="item"
+                         onclick={function(e){
+                           e.preventDefault();
+                           var data ;
+                           if(answer.votes === undefined){
+                             data = "up"
+                           } else {
+                             if(answer.votes[0].vote === -1){
+                               data = "reup"
+                             }
+                           }
+                           if(answer.votes === undefined || (answer.votes !== undefined && answer.votes[0].vote === -1) ){
+                             $.ajax({
+                               type: "POST",
+                               url: "/vote/answer/" + answer.id,
+                               data: JSON.stringify({vote: data}),
+                               contentType: "application/json",
+                               dataType: "text",
+                               success: function(res){
+                                 if(res === "voted"){
+                                   answer.votes = [{userId: wsCtrl.userId, vote: 1}]
+                                   if(data === "up") answer.voteCount +=1;
+                                   if(data === "reup") answer.voteCount +=2;
+                                   rd.qa(function(){m.redraw()})
+                                 }
+                               }
+                             });
+                           }
+                         }}
+                      >
+                        <i className={((answer.votes !== undefined && answer.votes[0].vote === 1)?"blue":"")  + " big caret up icon"}></i>
+                      </a>
+                      <div className="item">
+                        <span className="numVote">{answer.voteCount}</span>
+                      </div>
+                      <a className="item"
+                         onclick={function(e){
+                           e.preventDefault();
+                           var data ;
+                           if(answer.votes === undefined){
+                             data = "down"
+                           } else {
+                             if(answer.votes[0].vote === 1){
+                               data = "redown"
+                             }
+                           }
+                           if(answer.votes === undefined || (answer.votes !== undefined && answer.votes[0].vote === 1) ){
+                             $.ajax({
+                               type: "POST",
+                               url: "/vote/answer/" + answer.id,
+                               data: JSON.stringify({vote: data}),
+                               contentType: "application/json",
+                               dataType: "text",
+                               success: function(res){
+                                 if(res === "voted"){
+                                   answer.votes = [{userId: wsCtrl.userId, vote: -1}]
+                                   if(data === "down") answer.voteCount -=1;
+                                   if(data === "redown") answer.voteCount -=2;
+                                   rd.qa(function(){m.redraw()})
+                                 }
+                               }
+                             });
+                           }
+                         }}
+                      >
+                        <i className={((answer.votes !== undefined && answer.votes[0].vote === -1)?"blue":"")  + " big caret down icon"}></i>
+                      </a>
+                    </div>
+                  </div>
+                  <div className="fifteen wide column">
+                    
+                    <div className="ui middle aligned divided list qa">
+                      <div className="item answer">
+                        
+                        <div className="content">
+                          {m.trust(api.post(answer.answer))}
+                        </div>
+                        
+                        <div class="content clearfix">
+                          <a class="right floated author route ulpt" href={"/@/" + question.user.id}>
+                            <img class="ui avatar image" src={(question.user.avatar.length>0)?("/getimage/small/" + question.user.avatar):wsCtrl.defaultAvata}/> {question.user.name}
+                          </a>
+                        </div>
+                      </div>
+                      
+                      {answer.comment.map(function(comment){
+                        return (
+                            <div className="item comment">
+                              <div className="content">
+                                {comment.comment} - <a class="route ulpt" href={"/@/" + comment.user.id}>{comment.user.name}</a>
+                              </div>
+                            </div>
+                        )
+                      })}
+                      
+                      
+                      <div className="item">
+                        {Partial.comment(ctrl, ctrl.addComment, answer.id, ctrl.getInput(answer.id), "a")}
+                      </div>
+                    
+                    </div>
+                  
+                  </div>
+                </div>
+            )
+          })}
+          
+          
+          
+          <div className="ui form answerWr">
+            <div className="field">
+              <label>Text</label>
+              <input name="questionId" type="hidden" value={question.id}/>
+              <textarea name="answer"  style="max-height: 68px"
+                        config={function (element, isInit, ctx) {
+                          if(!isInit) {
+                            if(wsCtrl.userId.length == 0){
+                              $(element).on('click input', function(){
+                                api.signin();
+                                element.value = ''
+                              })
+                            } else {
+                              $(element).on('input', function(){
+                                ctrl.inputAnswer($(element).val())
+                              });
+                            }
+                            $(element).textareaAutoSize();
+                          }
+                          element.value = ctrl.inputAnswer();
+                          if(element.value.length<1){
+                            $(element).css('height', '24')
+                          }
+                        }
+                        }
+                        onkeypress={function(e){
+                
+                          if(e.keyCode == 13 && !e.shiftKey) {
+                            m.redraw.strategy("none");
+                            if(e.keyCode == 13 && e.shiftKey && ctrl.inputAnswer().length < 1){
+                              return false;
+                            }
+                          }
+                        }
+                        }
+              >{}</textarea>
+            </div>
+            <div className="field">
+              <button  type="submit"
+                       onclick={function(){
+                         ctrl.sendAnswer();
+                       }}
+              >Answer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  )
+};
+
+
+Partial.comment = function(ctrl, action, actionId, input, type){
+  return (
+      <textarea rows="1" style="max-height: 74px; padding: 5px;" className="commentQA"
+                config={function (element, isInit, ctx) {
+                  if(!isInit) {
+                    if(wsCtrl.userId.length == 0){
+                      $(element).on('click input', function(){
+                        api.signin();
+                        element.value = ''
+                      })
+                    } else {
+                      $(element).on('input', function(){
+                        input($(element).val())
+                      });
+                    }
+                    $(element).textareaAutoSize();
+                  }
+                  element.value = input();
+                  if(element.value.length<1){
+                    $(element).css('height', '26')
+                  }
+                }
+                }
+                onkeypress={function(e){
+        
+                  if(e.keyCode == 13 && !e.shiftKey) {
+                    //var source = e.target || e.srcElement;
+                    m.redraw.strategy("none");
+                    //input($(source).val());
+                    if (input().length < 1) {
+                      console.log("chat length < 1")
+                      return false;
+                    } else {
+                      action(actionId, input, type);
+                      input("")
+                      return false;
+                    }
+                  }else{
+                    m.redraw.strategy("none");
+                    if(e.keyCode == 13 && e.shiftKey && input().length < 1){
+                      return false;
+                    }
+                  }
+                }
+                }
+                placeholder="Click here to type a comment"
+      >{}</textarea>
+  )
+}
+
+module.exports = Partial;

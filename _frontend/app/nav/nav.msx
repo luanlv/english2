@@ -1,0 +1,12 @@
+
+var NavController = require('./_controller.msx');
+var NavView = require('./_view.msx');
+
+var Nav = {
+  controller: NavController,
+  view: NavView
+  
+};
+
+
+module.exports = Nav;

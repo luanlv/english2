@@ -1,0 +1,133 @@
+"user strict";
+
+m.route.mode = "pathname";
+
+var Nav = require('./nav.msx');
+var Home = require('./home.msx');
+// var Qa = require('./qa.msx');
+// var ChatRoom = require('./chatroom.msx');
+// var User = require('./user.msx');
+// var UserSetting = require('./userSetting.msx');
+// var Room = require('./room.msx');
+// var Footer = require('./footer.msx');
+
+window.route = function( sub ){
+  return {
+    controller : function(){
+      m.redraw.strategy( 'diff' );
+
+      return new sub.controller();
+    },
+    view : sub.view
+  }
+};
+
+window.target = [];
+window.tenant = function(id, module) {
+  target.push(id);
+  return {
+    controller: module.controller,
+    view: function(ctrl) {
+      if(target.indexOf(id) != -1 || id == "all"){
+        target.splice(target.indexOf(id), 1);
+        return module.view(ctrl);
+      } else {
+        return {subtree: "retain"}
+      }
+    }
+  }
+};
+
+window.local = function(id, callback) {
+  return function(e) {
+    id.map(function(component){
+      if(window.target.indexOf(component) < 0) window.target.push(component)
+    });
+    if(callback == undefined) callback = function(){};
+    callback.call(this, e)
+  }
+};
+
+window.rd = {
+  nav: function(){
+    local(['nav'], m.redraw).call()
+  },
+  home: function(){
+    local(['home'], m.redraw).call()
+  },
+  qa: function(){
+    local(['qa'], m.redraw).call()
+  },
+  app: function(){
+    local(['app'], m.redraw).call()
+  },
+  right: function(){
+    local(['right'], m.redraw).call()
+  },
+  chatroom: function(){
+    local(['chatroom'], m.redraw).call()
+  },
+  room: function(){
+    local(['room'], m.redraw).call()
+  },
+  user: function(){
+    local(['user'], m.redraw).call()
+  },
+  setting: function(){
+    local(['setting'], m.redraw).call()
+  },
+  all: function(){
+    local(["home", "qa", "nav", "app", "right", "chatroom", "room", "user", "setting"], m.redraw).call()
+  },
+  list: function(views){
+    local(views, m.redraw).call()
+  }
+};
+
+
+
+//var listId = [];
+//var flag = true;
+
+
+
+// window.Chat = require('./chat.msx');
+
+window.Loading = {
+  controller: function(){
+
+  },
+  view: function(){
+    console.log("render loading!!");
+    return m('', 'LOADING')
+  }
+};
+
+vis(function(){
+  if(vis()){
+    console.log("visible")
+    rd.all(function(){m.redraw()});
+  }
+});
+
+
+window.initRoute = function(){
+  m.route(document.getElementById('app'), "/", {
+    "/": tenant('home', route(Home)),
+    // "/post/:postId": tenant('home', route(Home)),
+    // "/qa": tenant('qa', route(Qa)),
+    // "/qa/new": tenant('qa', route(Qa)),
+    // "/qa/:questionId": tenant('qa', route(Qa)),
+    // "/chatroom": tenant('chatroom', route(ChatRoom)),
+    // "/chatroom/:roomId": tenant('room', route(Room)),
+    // "/settings": tenant('setting', route(UserSetting)),
+    // "/@/:user": tenant('user', route(User)),
+  });
+  $('.loaderWr').remove();
+};
+
+window.initComponent = function() {
+  m.mount(document.getElementById('nav'), tenant('nav', Nav));
+  // m.mount(document.getElementById('footer'), tenant('footer', Footer));
+  // m.mount(document.getElementById('rightContainer'), tenant('right', Chat));
+}

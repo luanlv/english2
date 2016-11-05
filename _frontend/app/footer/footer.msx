@@ -1,0 +1,16 @@
+
+var Footer = {
+  controller: function() {
+
+  },
+  view: function(ctrl) {
+    return (
+        <div className="footer">
+          {/*FOOTER !*/}
+        </div>
+    )
+  }
+};
+
+
+module.exports = Footer;

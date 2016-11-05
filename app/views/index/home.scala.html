@@ -1,0 +1,81 @@
+@()(implicit ctx: Context)
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta name="fragment" content="!">
+		<meta charset="UTF-8">
+		<link rel="dns-prefetch" href="static.luanlv.info">
+		<link rel="shortcut icon" href="@routes.Assets.at("favicon.ico")">
+		<title>Demo</title>
+		@views.html.index.other.headjs()
+		@views.html.index.other.spinner()
+		</head>
+
+	<body
+	id="@ctx.userId.getOrElse("")"
+	name="@ctx.name.getOrElse("")"
+	mv = "@mVersion(ctx.userId)"
+	avatar = "@ctx.avatar.getOrElse("")"
+	style="background: #e8eaed"
+	>
+		
+
+		<div class="loaderWr">
+			<div class="loaderPos">
+				<div class="spinner">
+					<div class="rect1"></div>
+					<div class="rect2"></div>
+					<div class="rect3"></div>
+					<div class="rect4"></div>
+					<div class="rect5"></div>
+				</div>
+			</div>
+		</div>
+		<div id="nav"> </div>
+		<div id="count"></div>
+		<div id="app"> </div>
+		<div id="footer"></div>
+		<div id="game"></div>
+		<div id="rightContainer"></div>
+
+		<div class="red"></div>
+		<script>
+				var static = "";
+				@*head.load(static +'@cssTagName("custom.min.css")',*@
+				head.load(static + "@jsDev("custom.css")",
+						"https://cdnjs.cloudflare.com/ajax/libs/jquery-powertip/1.2.0/css/jquery.powertip.min.css",
+//			  "/assets/semantic/semantic.min.css?v=3");
+						"https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css");
+				//"https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css");
+				head.load(static + '@jsTagName("vendor/jquery.min.js")')
+				head.load("https://cdnjs.cloudflare.com/ajax/libs/jquery-powertip/1.2.0/jquery.powertip.min.js")
+						//head.load("/assets/javascripts/vendor/jquery.min.js")
+						.js(static + '@jsTagName("jquery.cookie.min.js")')
+						.js(static + '@jsTagName("jquery.storageapi.min.js")')
+						.js("https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js")
+						.js(static + '@jsTagName("jquery.textarea_autosize.js")')
+						.js(static + '@jsTagName("attrchange.js")')
+						.js(static + '@jsTagName("moment.min.js")')
+						.js(static + '@jsTagName("mithril.js")')
+						.js(static + '@jsTagName("mithril-storage.js")')
+						.js(static + '@jsTagName("main.js")')
+						.js({app: static + '@jsDev("app.js")'})
+				head.ready('app', function() {
+					var f1 = function(){
+						if(typeof(initRoute) == "function" && typeof($) == "function" && $('.red').css('color') != 'rgb(0, 0, 0)'){
+							initRoute();
+							initComponent();
+						} else {
+							setTimeout(f1, 10)
+						}
+					};
+					f1()
+				});
+
+		</script>
+
+
+
+	</body>
+</html>

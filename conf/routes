@@ -1,0 +1,82 @@
+
+GET /                      controllers.Application.index
+
+#GET /test                  controllers.Test.test
+GET /test2                  controllers.Test.test2
+GET /?                     controllers.Lobby.home
+GET /post/:postId          controllers.Application.post(postId: String)
+GET /qa                    controllers.Application.index
+GET /qa/new                controllers.Application.index
+#POST /qa/answer            controllers.API.doAnswer
+POST /qa/new               controllers.API.doAsk
+
+GET /qa/newquestion        controllers.API.newQuestion
+GET /qa/hotquestion        controllers.API.hotQuestion
+
+GET /qa/allquestion        controllers.API.getAllQuestion
+GET /qa/:questionId        controllers.API.getQuestion(questionId: String)
+
+GET /chatroom              controllers.Chat.chatRooms
+GET /chatroom/:id          controllers.Chat.chatRoom(id: String)
+GET /json                  controllers.Application.json
+GET /settings              controllers.Application.index
+
+GET /@/:username               controllers.Application.user(username: String)
+GET /@/:username/mini          controllers.User.showMini(username: String)
+
+POST /post                           controllers.API.doPost
+GET  /post/:username                 controllers.API.getPost(username: String)
+GET  /viewpost/:postId               controllers.API.viewPost(postId: String)
+GET  /viewquestion/:questionId       controllers.API.viewQuestion(questionId: String)
+
+POST /like/post/:postId               controllers.API.likePost(postId: String)
+POST /unlike/post/:postId             controllers.API.unlikePost(postId: String)
+POST  /vote/question/:questionId       controllers.API.vote(questionId: String)
+POST  /vote/answer/:answerId           controllers.API.voteAnswer(answerId: String)
+
+
+GET   /socket                          controllers.Main.websocket
+
+#GET   /monitor                         controllers.Monitor.index
+#GET   /monitor/socket                  controllers.Monitor.websocket
+#GET   /status                          controllers.Monitor.status
+
+GET   /login                           controllers.Auth.login
+POST  /login                           controllers.Auth.authenticate
+GET   /logout                          controllers.Auth.logout
+GET   /signup                          controllers.Auth.signup
+POST  /signup                          controllers.Auth.signupPost
+GET   /signup/check-your-email/:name   controllers.Auth.checkYourEmail(name: String)
+GET   /signup/confirm/:token           controllers.Auth.signupConfirmEmail(token: String)
+GET   /password/reset                  controllers.Auth.passwordReset
+POST  /password/reset/send             controllers.Auth.passwordResetApply
+GET   /password/reset/sent/:email      controllers.Auth.passwordResetSent(email: String)
+GET   /password/reset/confirm/:token   controllers.Auth.passwordResetConfirm(token: String)
+POST  /password/reset/confirm/:token   controllers.Auth.passwordResetConfirmApply(token: String)
+POST  /set-fingerprint/:hash/:ms       controllers.Auth.setFingerprint(hash: String, ms: Int)
+
+# Images
+#GET      //static.luanlv.info/getimage/:size/:uuid        @controllers.ImageCtrl.get(size: String, uuid: String)
+#GET      /getimage/:size/:uuid        @controllers.ImageCtrl.get(size: String, uuid: String)
+#POST     /upload/image                @controllers.ImageCtrl.upload
+#User
+
+POST  /rel/follow/:userId              controllers.Relation.follow(userId: String)
+POST  /rel/unfollow/:userId            controllers.Relation.unfollow(userId: String)
+
+POST  /rel/unfriend/:userId            controllers.Relation.unfriend(userId: String)
+POST  /rel/reject/:userId              controllers.Relation.reject(userId: String)
+
+POST  /rel/block/:userId               controllers.Relation.block(userId: String)
+POST  /rel/unblock/:userId             controllers.Relation.unblock(userId: String)
+
+POST    /settings                       controllers.API.getSelfInformation
+POST    /settings/updateInfo            controllers.API.updateInformation
+
+GET     /api/getUser/:user             controllers.API.getInformationUser(user: String)
+GET     /api/listfollow/:userId        controllers.API.getListFollower(userId: String)
+GET     /api/listfriend/:userId        controllers.API.getListFriend(userId: String)
+
+# Assets
+GET   /file/:filename                 controllers.FileController.getFile(filename: String)
+GET   /assets/*file                    controllers.Assets.at(path="/public", file)

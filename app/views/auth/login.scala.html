@@ -1,0 +1,32 @@
+@(form: Form[_], referrer: Option[String])(implicit ctx: Context)
+
+@auth.layout(title = trans.signIn.str(), zen = true) {
+
+	<div class="ui segment">
+		<div class="ui form">
+			<h1 class="lichess_title">Login !</h1>
+			<form action="@routes.Auth.authenticate?referrer=@referrer" method="POST">
+				<div>
+					@form.globalError.map { error =>
+						<p class="error">@error.message</p>
+					}
+					@auth.formFields(form("username"), form("password"), None)
+					<div>
+						<button type="submit" class="ui teal button" data-icon="F"> @trans.signIn()</button>
+
+					</div>
+					<div>
+						<br>
+						@trans.forgotPassword()
+						<a href="javascript:void(0)"> @trans.passwordReset()</a>
+						<br>
+						Not have account?
+						<a href="javascript:void(0)" onclick="signup()"> @trans.signUp()</a>
+					</div>
+				</div>
+				<input type="hidden" class="referrer" name="_referrer" value="@referrer.getOrElse(currentUrl)" />
+			</form>
+		</div>
+	</div>
+
+}

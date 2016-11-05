@@ -1,0 +1,10 @@
+var UserController = require('./_controller.msx');
+var UserView = require('./_view.msx');
+
+var User = {
+  controller: UserController,
+  view: UserView
+};
+
+
+module.exports = User;

@@ -1,0 +1,14 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+
+var GameController = function(){
+  $.cookie('url', m.route(), {path: "/"});
+  var ctrl = this;
+  
+  rd.game(function(){console.log("redraw game!"); m.redraw()});
+  
+};
+
+
+module.exports = GameController;

@@ -1,0 +1,8 @@
+
+var HomeController = require('./_controller.msx');
+var HomeView = require('./_view.msx');
+var Home={};
+Home.controller = HomeController;
+Home.view =HomeView;
+
+module.exports = Home;

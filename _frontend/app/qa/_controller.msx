@@ -1,0 +1,50 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var initData = {}
+
+var QaController = function() {
+  console.log("controller dashboard!");
+  $.cookie('url', m.route(), {path: "/"});
+  var ctrl = this;
+  ctrl.server = initData.dashboard || {server: false};
+  
+  // if(!wsCtrl.data.qa.init && m.route.param("questionId") === undefined){
+  if(m.route.param("questionId") === undefined){
+    wsCtrl.send(wsCtrl.sendData("initQA", {}));
+  }
+  
+  ctrl.setup = function(){
+    wsCtrl.question().answer = wsCtrl.question().answer.reverse();
+    //api.showPost(wsCtrl.post().post.id);
+  };
+  
+  ctrl.setupHotQuestion = function(){
+    wsCtrl.initHotQuestion = true;
+  };
+  
+  wsCtrl.request2 = api.requestWithFeedback2({method: "GET", url: "/qa/hotquestion" }, wsCtrl.hotQuestion, ctrl.setupHotQuestion);
+  
+  ctrl.inputAnswer = m.prop("");
+  ctrl.sendAnswer = function(){
+    wsCtrl.send(wsCtrl.sendData("answer", {questionId: m.route.param("questionId"), answer: ctrl.inputAnswer()}))
+    ctrl.inputAnswer("")
+  }
+  ctrl.input = {};
+  ctrl.getInput= function(id){
+    if(ctrl.input[id] === undefined) ctrl.input[id] = m.prop("");
+    return ctrl.input[id]
+  }
+  ctrl.addComment = function(actionId, input, type){
+    wsCtrl.send(wsCtrl.sendData("commentQA", {id: actionId, parentType:type, comment: input(), questionId: m.route.param("questionId")}))
+  };
+  
+  if(m.route.param("questionId") !== undefined){
+    wsCtrl.requestQa = api.requestWithFeedback2({method: "GET", url: "/viewquestion/" + m.route.param("questionId")}, wsCtrl.question, ctrl.setup);
+    wsCtrl.send(wsCtrl.sendData("subQuestion", {id: m.route.param("questionId")}));
+  }
+  ctrl.server.server = false;
+  rd.qa(function(){m.redraw()})
+}
+
+module.exports = QaController;

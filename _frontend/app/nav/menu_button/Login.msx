@@ -1,0 +1,67 @@
+var wsCtrl = require('../../_wsCtrl.js');
+var api = require('../../_api.msx');
+
+
+var LoginButton = function(ctrl){ return [
+      <a className="item fix-icon"
+         onclick={function(){api.signin();}}
+      >
+        <i className="large icon user"></i>
+        Login
+      </a>,
+      <div className="notifyWr">
+        {ctrl.displayLogin?(
+        <div className="inLogin"
+             config={function(el, isInit, ctx){
+               if(!isInit){
+                 function loginClick(){
+                    if(!$(el).is(':hover') && !$('.login-button').is(':hover')){
+                      ctrl.displayLogin = false;
+                      $(document).unbind("click", loginClick);
+                      rd.nav(function(){m.redraw()})
+                    }
+                 }
+                 $(document).on('click', loginClick)
+               }
+             }}
+        >
+          <div className="corner-right"><div className="tr"></div></div>
+
+          <div className="ui segment notify-content sha3">
+
+            <form className="ui small form" action="/login?referrer=" method="POST">
+              <div className="field">
+                <div className="ui left icon input">
+                  <i className="user icon"></i>
+                  <input type="text" pattern="^[\w-]+$" required="required" name="username" id="username" placeholder="User name"/>
+                </div>
+              </div>
+              <div className="field">
+                <div className="ui left icon input">
+                  <i className="lock icon"></i>
+                  <input type="password" required="required" name="password" id="password" placeholder="Password"/>
+                </div>
+              </div>
+              <div className="ui right floated tiny buttons">
+                <button className="ui positive button" type="submit">Login</button>
+                <div className="or" data-text="Or"></div>
+                <a href="javascript:void(0)" className="ui teal button"
+                   config={function(ele, isInit, ctx){
+                    if(!isInit){
+                      $(ele).on('click', function(){
+                           api.signup()
+                           rd.nav(function(){ctrl.displayLogin = false;m.redraw()})
+                        })
+
+                      }
+                    }
+                  }
+                >Signup</a>
+              </div>
+            </form>
+          </div>
+        </div>):""}
+      </div>
+]}
+
+module.exports = LoginButton;

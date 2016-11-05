@@ -1,0 +1,13 @@
+var UserSettingController = require('./_controller.msx');
+var UserSettingView = require('./_view.msx');
+
+var UserSetting = {
+  controller: UserSettingController,
+  view: UserSettingView
+};
+
+
+
+
+
+module.exports = UserSetting;

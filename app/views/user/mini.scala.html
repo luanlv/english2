@@ -1,0 +1,41 @@
+@(u: User, blocked: Boolean, followable: Boolean, rel: Option[lila.relation.Relation], rel2: Option[lila.relation.Relation])(implicit ctx: Context)
+<div class="mini">
+
+  <div class="ui header">
+    @{
+      if(u.avatar.length > 0) {
+        Html(s"<img src=/getimage/thumb/${u.avatar} />")
+      } else {
+        <img src="/assets/avatar/2.jpg"/>
+      }
+    }
+    <div class="content">
+      <a class="route" href=@{"/@/" + u.username}>@u.name</a>
+      <div class="sub header"><a class="route" href=@{"/@/" + u.username}>@@@{u.username}</a></div>
+    </div>
+  </div>
+
+
+@ctx.userId.map { myId =>
+
+    <table class="actions">
+      <tbody>
+        <tr>
+          @if(!blocked) {
+            @*<td>*@
+              @*<a class="button hint--bottom" data-hint="@trans.chat()" href="#">*@
+                @*<span data-icon="c">Message</span>*@
+              @*</a>*@
+            @*</td>*@
+            @*<td>*@
+              @*<a class="button hint--bottom" data-hint="@trans.play()" href="#">*@
+                @*<span data-icon="U">Lobby</span>*@
+              @*</a>*@
+            @*</td>*@
+          }
+          <td class="relation_actions">@relation.mini(u.id, blocked, followable, rel, rel2,  myId == u.id)</td>
+        </tr>
+      </tbody>
+    </table>
+}
+</div>

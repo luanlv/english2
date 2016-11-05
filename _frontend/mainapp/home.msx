@@ -1,0 +1,23 @@
+var wsCtrl = require('../ws/_wsCtrl.js');
+var api = require('./api.msx');
+
+
+var Home = {
+  controller: function(){
+    var ctrl = this;
+    ctrl.i = 0;
+  },
+  view: function(ctrl){
+    return <div
+      onclick={
+        api.fnAll(function(){
+          console.log("click2");
+          ctrl.i +=1;
+        })
+      }
+    >Home {ctrl.i + 1}</div>
+  }
+};
+
+
+module.exports = Home;

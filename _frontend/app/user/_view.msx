@@ -1,0 +1,137 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var UserView = function(ctrl) {
+  return (!ctrl.request.ready()?(
+          <div className="ui segment loading mh500">
+          
+          </div>
+      ):[
+        <div className="ui grid main-content sha2">
+          <div className="head-user ui grid">
+            <div className="four wide column" style="  min-height: 250px">
+              <div className="avatarWr">
+                <img id="avatarImg" src={(ctrl.user().avatar.length>0)?(wsCtrl.static + "/getimage/small/" + ctrl.user().avatar):"/assets/img/user.jpg"} width="180" height="180"/>
+              </div>
+            
+            </div>
+            <div className="twelve wide column" style="min-height: 250px">
+              <h2 className="ui header">
+                {ctrl.user().name}
+              </h2>
+              <div className="edit">
+                {(wsCtrl.userId !== ctrl.userId)?[
+                
+                ]:(
+                    <a className="ui basic button" href={"/settings"} config={m.route}>
+                      <i className="write square icon"></i>
+                      Edit Profile
+                    </a>
+                )}
+              
+              
+              </div>
+              <div className="ui divider"></div>
+              
+              <br/><br/><br/><br/><br/>
+              
+              <div className="ui divider"></div>
+              <div className="infoWr">
+                <div className="relation_actions">
+                  {(wsCtrl.userId === ctrl.user().username)?[
+                    <a className="tiny ui  basic  relation button hint--bottom hover_text custom" tabindex="0" href="#">
+                      <span className="content">{ctrl.user().extra.nbFollower} Folowers</span>
+                    </a>,
+                    <a className="tiny ui  basic  relation button hint--bottom hover_text custom" tabindex="0" href="#">
+                      <span className="content">{ctrl.user().extra.nbFriends} Friends</span>
+                    </a>
+                  ]:[(!ctrl.user().extra.relation)?(
+                      <a className="tiny ui  basic animated relation button hint--bottom hover_text custom"
+                         tabindex="0" href={"/rel/follow/" + ctrl.user().username + "?mini=1"}>
+                        <span className="visible content">{ctrl.user().extra.nbFollower} Follower</span>
+                        <span className="hidden content">
+                                              <i className="thumbs outline up icon"></i>
+                                              Follow
+                                            </span>
+                      </a>
+                  ):(
+                      <a className="tiny ui blue basic animated relation button hint--bottom hover_text custom" tabindex="0" href={"/rel/unfollow/" + ctrl.user().username + "?mini=1"}>
+                        <span className="visible content">{ctrl.user().extra.nbFollower} Follower</span>
+                        <span className="hidden content">
+                                                  <i className="thumbs up icon"></i>
+                                                  Following
+                                                </span>
+                      </a>
+                  ),
+                    (!ctrl.user().extra.friend)?(
+                        (!ctrl.user().extra.makeFriend)?(
+                            <a className="tiny ui  basic animated relation button hint--bottom hover_text custom" tabindex="0" href={"/rel/request/" + ctrl.user().username + "?mini=1"}>
+                              <span className="visible content">{ctrl.user().extra.nbFriends} Friends</span>
+                              <span className="hidden content">
+                                                  <i className="thumbs up icon"></i>
+                                                  Add Friend
+                                                </span>
+                            </a>
+                        ):(
+                            <a className="tiny ui olive basic animated relation button hint--bottom hover_text custom" tabindex="0" href={"/rel/unrequest/" + ctrl.user().username + "?mini=1"}>
+                              <span className="visible content">{ctrl.user().extra.nbFriends} Friends</span>
+                              <span className="hidden content">
+                                                  <i className="thumbs up icon"></i>
+                                                  Cancel Request
+                                                </span>
+                            </a>
+                        )
+                    
+                    ):(
+                        <a className="tiny ui blue basic animated relation button hint--bottom hover_text custom unfriend" tabindex="0" href={"/rel/unfriend/" + ctrl.user().username + "?mini=1"}>
+                          <span className="visible content unfriend">{ctrl.user().extra.nbFriends} Friends</span>
+                          <span className="hidden content unfriend">
+                                <i className="remove user icon"></i>
+                                Unfriend
+                              </span>
+                        </a>
+                    )
+                  ]
+                  }
+                
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>,
+        <div className="ui grid main-content sha2">
+          <div className="body-user ui grid">
+            <div className="eight wide column" style="min-height: 200px; border-right: 1px solid #ddd">
+              <h3>List Followers</h3>
+              {!ctrl.initFollower?(
+                  "loading ..."
+              ):(
+                  <ul>
+                    {ctrl.followers().map(function(user){
+                      return (
+                          <li><a className="route ulpt" href={"/@/" + user}>{user}</a></li>
+                      )
+                    })}
+                  </ul>
+              )}
+            </div>
+            <div className="eight wide column" style="min-height: 200px">
+              <h3>List Friends</h3>
+              {!ctrl.initFriend?(
+                  "loading ..."
+              ):(<ul>
+                    {ctrl.friends().map(function(user){
+                      return (
+                          <li><a className="route ulpt" href={"/@/" + user}>{user}</a></li>
+                      )
+                    })}
+                  </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      ]
+  )
+}
+
+module.exports = UserView;

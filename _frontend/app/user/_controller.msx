@@ -1,0 +1,41 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var UserController = function() {
+  var ctrl = this;
+  ctrl.userId = m.route.param('user');
+  ctrl.user = m.prop({});
+  //ctrl.userId = m.route.param('user');
+  //m.request({method: "GET", url: "/api/getUser/" + ctrl.userId}).then(
+  //    function(user){
+  //        ctrl.user(user);
+  //    }
+  //);
+  ctrl.initFollower = false;
+  ctrl.initFriend = false;
+  ctrl.followers = m.prop([]);
+  ctrl.friends = m.prop([]);
+  ctrl.setup = function(){
+    rd.user();
+  };
+  
+  ctrl.setupFollower = function(){
+    ctrl.initFollower  = true;
+  };
+  
+  ctrl.setupFriend = function(){
+    ctrl.initFriend = true;
+  };
+  
+  wsCtrl.request1 = api.requestWithFeedback2({method: "GET", url: "/api/listfollow/" + ctrl.userId }, ctrl.followers, ctrl.setupFollower);
+  wsCtrl.request2 = api.requestWithFeedback2({method: "GET", url: "/api/listfriend/" + ctrl.userId }, ctrl.friends, ctrl.setupFriend);
+  
+  ctrl.error = function(){
+    m.route('/');
+  }
+  ctrl.request = api.requestWithFeedback2({method: "GET", url: "/api/getUser/" + ctrl.userId}, ctrl.user, ctrl.setup, ctrl.error);
+  rd.user()
+}
+
+
+module.exports = UserController;

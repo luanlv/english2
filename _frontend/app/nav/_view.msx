@@ -1,0 +1,177 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var UserButton = require('./menu_button/User.msx');
+var LoginButton = require('./menu_button/Login.msx');
+var MessageButton = require('./menu_button/Message.msx');
+var FriendButton = require('./menu_button/Friend.msx');
+
+var Partial = require('./_partial.msx');
+
+var NavView = function(ctrl){
+  api.rd("nav: " + redraw.nav);
+  redraw.nav++;
+  return (
+      <div className="ui top small blue inverted fixed  menu sha">
+        <div className="ui top small blue inverted fixed  menu sha" style="width: 1000px;left: 0; right: 0; margin: 0 auto;">
+          <div class={(wsCtrl.game?"menuDisable":"")}></div>
+          <a href="/"  data-content="Trang chủ" data-position="bottom left"
+             className={((m.route() == "/")?"active":"") + " item route-button route fix-icon"}
+             config={function(el, isInited){
+               if(!isInited){
+                 $(el).popup({inline: true});
+               }
+             }}
+          ><i  className="large icon home users-icon"></i></a>
+          
+          
+          <a href="/qa" data-content="Hỏi & Đáp" data-position="bottom left"
+             className={((m.route() == "/qa")?"active":"") + " item route-button route fix-icon"}
+             config={function(el, isInited){
+               if(!isInited){
+                 $(el).popup({inline: true});
+               }
+             }}
+          >
+            <i className="large browser icon"></i>
+          </a>
+  
+          <a id={(wsCtrl.game?"gameButton":"")} href="javascript:void(0)"
+          className="item route-button route fix-icon"
+            onclick={function(){
+              api.toggleGame()
+            }}
+          >
+          <i className="large icon game"></i>
+          </a>
+          
+          
+          {/*<a href="/chatroom" data-content="Chat Room" data-position="bottom left"*/}
+             {/*className={((m.route().substring(0, 9) == "/chatroom")?"active":"") + " item route-button route fix-icon"}*/}
+             {/*config={function(el, isInited){*/}
+               {/*if(!isInited){*/}
+                 {/*$(el).popup({inline: true});*/}
+               {/*}*/}
+             {/*}}*/}
+          {/*>*/}
+            {/*<i className="large icon comments"></i>*/}
+          {/*</a>*/}
+          
+          {/*<div className="ui category search item fix-icon">*/}
+          {/*<div className="ui icon input">*/}
+          {/*<input className="" type="text" style="width: 300px;" placeholder="Search ..."/>*/}
+          {/*<i className="search link icon"></i>*/}
+          {/*</div>*/}
+          {/*<div className="results"></div>*/}
+          {/*</div>*/}
+          
+          
+          
+          {(wsCtrl.userId.length>0)?(<div className="right menu ">
+            
+            <div className="item fix-icon" data-content="Trực tuyến" data-position="bottom right"
+                 config={function(el, isInited){
+                   if(!isInited){
+                     $(el).popup({inline: true});
+                   }
+                 }}
+            >
+              <i className="large icon  users">{}</i>
+              <div className="bold">{ctrl.userNumber()?(ctrl.userNumber()):("?")}</div>
+            </div>
+            <a href="javascript:void(0)" className="item fix-icon"
+               config={function(el, isInit, ctx){
+                 if(!isInit){
+                   $(el).popup({
+                     popup : $('.ui.popup.show-ping'),
+                     position : 'bottom right',
+                     on    : 'hover'
+                   })
+                 }
+               }
+               }
+            >
+              {(ctrl.ping()>8000 || ctrl.ping() < 0)?(
+                  <i className={"large spinner loading " + ((ctrl.ping()>6000)?"red":"") + " icon zero-margin-right"}></i>
+              ):(
+                  <i className={"large " + ((ctrl.ping()<1500)?"":((ctrl.ping()<3000)?"yellow":"red")) + " icon heartbeat zero-margin-right"}
+                     config={function(element, isInit, ctx){
+                       if(!isInit){
+                         setTimeout(function fnJiggle(){
+                           $(element).transition('jiggle')
+                           if(ctrl.ping() > 0 || ctrl.ping <= 500){
+                             setTimeout(fnJiggle, 1000)
+                           } else {
+                             setTimeout(fnJiggle, 500)
+                           }
+                         },1000)
+                       }
+                     }
+                     }
+                  >{}</i>
+              )}
+            </a>
+            {FriendButton(ctrl)}
+            {MessageButton(ctrl)}
+            {UserButton(ctrl)}
+          </div>):(
+              <div className="right menu">
+                <div className="item fix-icon">
+                  <i className="large icon users"></i>
+                  <div className="bold">{ctrl.userNumber()?(ctrl.userNumber()):("?")}</div>
+                </div>
+                <a href="javascript:void(0)" className="item fix-icon"
+                   config={function(el, isInit, ctx){
+                     if(!isInit){
+                       $(el).popup({
+                         popup : $('.ui.popup.show-ping'),
+                         position : 'bottom right',
+                         on    : 'hover'
+                       })
+                     }
+                   }
+                   }
+                >
+                  {(ctrl.ping()>8000 || ctrl.ping() < 0)?(
+                      <i className={"large spinner loading " + ((ctrl.ping()>6000)?"red":"") + " icon zero-margin-right"}></i>
+                  ):(
+                      <i className={"large " + ((ctrl.ping()<1500)?"":((ctrl.ping()<3000)?"yellow":"red")) + " icon heartbeat zero-margin-right"}
+                         config={function(element, isInit, ctx){
+                           if(!isInit){
+                             setTimeout(function fnJiggle(){
+                               $(element).transition('jiggle');
+                               if(ctrl.ping() > 0 || ctrl.ping <= 500){
+                                 setTimeout(fnJiggle, 1000)
+                               } else {
+                                 setTimeout(fnJiggle, 500)
+                               }
+                             },1000)
+                           }
+                         }
+                         }
+                      >{}</i>
+                  )}
+                </a>
+                {LoginButton(ctrl)}
+              </div>
+          )}
+          {Partial.Ping(ctrl)}
+          {Partial.MakeFriend(ctrl)}
+          {Partial.Messages(ctrl)}
+          <div className="ui modal sign-up" >
+            <div className="ui segment loading" style="min-height: 500px;">
+            </div>
+          </div>
+          <div className="ui modal sign-in" >
+            <div className="ui segment loading" style="min-height: 300px;">
+            </div>
+          </div>
+        
+        
+        </div>
+      </div>
+  )
+}
+
+
+module.exports = NavView;

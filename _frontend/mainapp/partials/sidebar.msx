@@ -1,0 +1,58 @@
+
+
+var Sidebar = function(ctrl){
+  return [
+    <nav data-pages="sidebar" className="page-sidebar">
+      <div className="sidebar-header">
+        <a href="/"
+           config={m.route}
+        >
+          <img src="/assets/img/logo_white.png" alt="logo" data-src="/assets/img/logo_white.png" data-src-retina="/assets/img/logo_white_2x.png" width="78" height="22" className="brand"/>
+        </a>
+      </div>
+      <div className="sidebar-menu">
+        <div className="scroll-wrapper menu-items" style="position: relative;">
+          <ul className="menu-items scroll-content" style="height: 233px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
+            <li className="m-t-30">
+              <a href="/"
+                 config={m.route}
+                 className="detailed">
+                <span className="title">Dashboard</span>
+                <span className="details">12 New Updates</span>
+              </a>
+              {/*<span className="bg-success icon-thumbnail">*/}
+                {/*<i className="pg-home"></i>*/}
+              {/*</span>*/}
+            </li>
+            <li className="">
+              <a href="/" className="detailed"
+                 config={m.route}
+              >
+                <span className="title">Widgets</span>
+                <span className="details">22 items</span>
+              </a>
+              {/*<span className="icon-thumbnail">W</span>*/}
+            </li>
+          </ul>
+          <div className="scroll-element scroll-x">
+            <div className="scroll-element_outer">
+              <div className="scroll-element_size"></div>
+              <div className="scroll-element_track"></div>
+              <div className="scroll-bar" style="width: 96px;"></div>
+            </div>
+          </div>
+          <div className="scroll-element scroll-y">
+            <div className="scroll-element_outer">
+              <div className="scroll-element_size"></div>
+              <div className="scroll-element_track"></div>
+              <div className="scroll-bar" style="height: 96px;"></div>
+            </div>
+          </div>
+        </div>
+        <div className="clearfix"></div>
+      </div>
+    </nav>
+  ]
+};
+
+module.exports = Sidebar;

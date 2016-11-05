@@ -1,0 +1,11 @@
+var ChatRoomController = require('./_controller.msx');
+var ChatRoomView = require('./_view.msx');
+
+var ChatRoom = {
+  controller: ChatRoomController,
+  view: ChatRoomView
+};
+
+
+
+module.exports = ChatRoom;

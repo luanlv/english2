@@ -1,0 +1,211 @@
+var wsCtrl = require('../ws/_wsCtrl.js');
+
+var LINK_DETECTION_REGEX = /\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A-Za-z0-9+&@#\/%=~_|‌​]/gi;
+
+var api = api || {};
+
+
+api.rd = function(name){
+  //console.log("Debug: " + name)
+};
+
+
+api.fn = function(listView, callback) {
+  return function () {
+    callback();
+    rd.listView(listView);
+  };
+};
+api.fnAll = function(callback) {
+  return function () {
+    callback();
+    rd.all();
+  };
+};
+
+api.post = function(post){
+  return post.replace(LINK_DETECTION_REGEX, function(url) {
+    var address;
+    address = /[a-z]+:\/\//.test(url) ? url : "http://" + url;
+    url = url.replace(/^https?:\/\//, '');
+    return (url.indexOf(document.domain)>=0 || url.indexOf('localhost') >= 0)?("<a " +" class='route' "+ "href='" + address.replace(/^.*\/\/[^\/]+/, '') + "' >" + url + "</a>") : ("<a href='" + address + "' target='_blank'>" + address + "</a>");
+  }).replace(/\n/g, '<br/>');
+};
+
+api.requestWithFeedback = function(args) {
+  var data = m.prop();
+  var completed = m.prop(false)
+  var complete = function() {
+    completed(true)
+  }
+  args.background = true
+  args.config = function(xhr) {
+    xhr.timeout = 4000
+    xhr.ontimeout = function() {
+      complete()
+      rd.qa(function(){ console.log("json error");m.redraw()})
+    }
+  };
+  return {
+    request: m.request(args).then(data).then(function(){
+      complete()
+      rd.qa(function(){ console.log("json ok");m.redraw()})
+    }),
+    data: data,
+    ready: completed
+  }
+};
+
+api.requestWithFeedback2 = function(args, bind, fn, fnError) {
+    var data = m.prop();
+    var completed = m.prop(false);
+    var complete = function() {
+        completed(true)
+    };
+    args.background = true;
+    args.config = function(xhr) {
+        xhr.timeout = 4000;
+        xhr.ontimeout = function() {
+            complete();
+            m.redraw();
+        }
+    };
+    return {
+        request: m.request(args).then(data).then(function(data){
+            //console.log(data);
+            if(bind !== undefined) bind(data);
+            if(fn !== undefined) fn();
+            complete();
+            rd.all(function(){m.redraw();});
+        }, function(error){
+            console.log(error)
+            if(fnError !== undefined)  fnError()
+        }),
+        data: data,
+        ready: completed
+    }
+};
+
+
+api.scrollBottom = function(element, isInit, context) {
+  if(!isInit){
+    element.scrollTop = element.scrollHeight;
+  }
+  var addLegth = (element.scrollHeight - context.prevHeight) || 0;
+  if( element.scrollHeight - element.clientHeight - element.scrollTop < addLegth +  10 )
+    element.scrollTop = element.scrollHeight;
+  context.prevHeight = element.scrollHeight
+}
+
+api.scrollBottom2 = function(element, isInit, context) {
+  if(!isInit){
+    element.scrollTop = element.scrollHeight;
+  }
+  var addLegth = (element.scrollHeight - context.prevHeight) || 0;
+  if( element.scrollHeight - element.clientHeight - element.scrollTop < addLegth + 60)
+    element.scrollTop = element.scrollHeight;
+  context.prevHeight = element.scrollHeight
+};
+
+api.setsVal = function(callback) {
+  return function(e) {
+    m.withAttr("value", callback)(e);
+    m.redraw.strategy("none")
+  }
+}
+
+
+
+api.markRead = function(rank){
+  if(wsCtrl.data.chat[rank].read === false){
+    //if(wsCtrl.data.chat[rank].chat[wsCtrl.data.chat[rank].chat.length - 1].f.id == wsCtrl.data.chat[rank].user.id) {
+    //  wsCtrl.send(wsCtrl.sendData("mr", {
+    //    uid: wsCtrl.data.chat[rank].user.id,
+    //    mv: wsCtrl.data.chat[rank].chat[wsCtrl.data.chat[rank].chat.length - 1].mv
+    //  }));
+    //}
+    wsCtrl.send(wsCtrl.sendData("mr", {
+      uid: wsCtrl.data.chat[rank].user.id,
+      mv: wsCtrl.data.chat[rank].chat[wsCtrl.data.chat[rank].chat.length - 1].mv
+    }));
+    wsCtrl.data.chat[rank].read = true;
+  }
+};
+
+api.focusById = function(uid){
+  setTimeout(function focusComment(){
+    if(document.getElementById(uid) != undefined){
+      console.log("run focus OK: " + uid)
+      document.getElementById(uid).focus();
+    } else {
+      console.log("running focus: " + uid)
+      setTimeout(focusComment, 100)
+    }
+  }, 100);
+};
+
+api.signin = function(){
+  $('.ui.modal.sign-in').modal({
+    onShow: function(){
+      var contentWr = $(this).children().first();
+      contentWr.load('/login', function(res, status, xhr){
+        if(status == "success"){
+          contentWr.removeClass('loading')
+          $('.sign-in .referrer').attr('value', window.location.pathname)
+        }
+      })
+    },
+    onHide: function(){
+      $('body').removeClass('dimmable');
+      var contentWr = $(this).children().first();
+      contentWr.addClass('loading')
+    }
+  })
+  .modal('show');
+};
+window.signin = api.signin;
+
+api.signup = function(){
+  $('.ui.modal.sign-up').modal({
+        onShow: function(){
+          var contentWr = $(this).children().first();
+          contentWr.load('/signup', function(res, status, xhr){
+            if(status == "success"){
+              contentWr.removeClass('loading')
+              $('.sign-up .referrer').attr('value', window.location.pathname)
+            }
+          })
+        },
+        onHide: function(){
+          $('body').removeClass('dimmable');
+          var contentWr = $(this).children().first();
+          contentWr.addClass('loading')
+        }
+      })
+    .modal('show');
+};
+window.signup = api.signup;
+
+api.time = function(timestamp){
+  return moment.unix(timestamp/1000).fromNow();
+};
+
+
+api.showPost = function(postId){
+  $('.ui.modal.show-post').modal({
+    onVisible: function () {
+      $('.ui.modal.show-post').modal("refresh");
+    },
+    onHide: function(){
+      m.route('/');
+      wsCtrl.data.post.list[wsCtrl.arrayObjectIndexOf(wsCtrl.data.post.list, postId, "id")] = wsCtrl.post().post;
+      wsCtrl.send(wsCtrl.sendData("unSubPost", {}));
+      wsCtrl.request.ready(false);
+      rd.home(function(){m.redraw()})
+    }
+  }).modal('show');
+};
+
+
+
+module.exports = api;

@@ -1,0 +1,127 @@
+var wsCtrl = require('../../_wsCtrl.js');
+var api = require('../../_api.msx');
+
+var Friend = function(ctrl){ return [
+      <a className="item nofity  message-button fix-icon" data-content="Kết bạn" data-position="bottom right"
+         onclick={function(){rd.nav(ctrl.displayFriend());}}
+         config={function(el, isInited){
+              if(!isInited){
+                var prepPopup = $(el);
+                prepPopup.popup({inline: true, on: 'manual'});
+                prepPopup.hover(function(){
+                  if(!wsCtrl.data.notify.display){prepPopup.popup('show');}
+                });
+                prepPopup.on('click mouseleave', function(){
+                  prepPopup.popup('hide');
+                });
+              }
+             }}
+      >
+        <a href="javascript:void(0)"><i className="large icon add user users-icon"></i></a>
+        {(wsCtrl.data.makeFriend.n>0)?(<div className="floating ui red label num-label">{wsCtrl.data.makeFriend.n}</div>):""}
+      </a>,
+      <div className="notifyWr">
+        {(wsCtrl.data.makeFriend.display)?(
+            <div className="inNotify"
+                 config={
+                    function(el, isInit, ctx){
+                      if(!isInit){
+                      console.log("////");
+                         $(el).on('mouseleave', function(){
+                             if(!$('.menu:hover').length > 0){
+                                $(el).unbind('mouseleave');
+                                $('.menu').unbind('mouseleave');
+                                wsCtrl.data.makeFriend.display = false;
+                                rd.nav(function(){m.redraw()})
+                             }
+                          });
+
+                         $('.menu').on('mouseleave', function(){
+                            if(!$(el).filter(':hover').length > 0){
+                              $(el).unbind('mouseleave');
+                              $('.menu').unbind('mouseleave');
+                              wsCtrl.data.makeFriend.display = false;
+                              rd.nav(function(){m.redraw()})
+                           }
+                          })
+                      }
+                    }
+                 }
+            >
+              <div className="corner-right"><div className="tr"></div></div>
+              <div className="ui raised  attracted segment notify-content sha3 pad0">
+                <div className="ui top attracted label tran">
+                  Friend Requests
+                </div>
+                {!wsCtrl.data.makeFriend.init?"LOADING":(
+                    <div>
+                      {wsCtrl.data.makeFriend.listRequests.map(function(friend){
+                      return (
+                          <div className="notifyFriend clearfix">
+                            <span className="ui list fleft">
+                              <div className="item">
+                                <img className="ui avatar image" src={(friend.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + friend.avatar):wsCtrl.defaultAvata} />
+                                  <div className="content">
+                                    <a className="header" href={"/@/" + friend.id} config={m.route}>{friend.name}</a>
+                                    <div className="description">wanting to make friend with you</div>
+                                  </div>
+                              </div>
+                            </span>
+                            <span className="mini ui buttons fright">
+                              <a href={("/rel/follow/" + friend.id)} className="ui positive button"
+                                onclick={function(e){
+                                  e.preventDefault();
+                                    $.post($(this).attr('href'),
+                                       function(data) {
+                                         //alert("Data Loaded: " + data);
+
+                                         wsCtrl.data.makeFriend.listRequests = wsCtrl.data.makeFriend.listRequests.filter(function (el) {
+                                            return el.id != friend.id;
+                                         });
+
+                                         rd.nav(function(){
+                                         if(wsCtrl.data.makeFriend.listRequests.length < 1 ){
+                                            wsCtrl.data.makeFriend.display = false;
+                                         }
+                                         m.redraw()
+                                         });
+                                       }
+                                    );
+                                }}
+                              >Chấp nhận</a>
+                              <div className="or"></div>
+                              <a className="ui  button"
+                                 href={("/rel/reject/" + friend.id)}
+                                 onclick={function(e){
+                                  e.preventDefault();
+                                    $.post($(this).attr('href'),
+                                       function(data) {
+                                         //alert("Data Loaded: " + data);
+
+                                         wsCtrl.data.makeFriend.listRequests = wsCtrl.data.makeFriend.listRequests.filter(function (el) {
+                                            return el.id != friend.id;
+                                         });
+
+                                         rd.nav(function(){
+                                         if(wsCtrl.data.makeFriend.listRequests.length < 1 ){
+                                            wsCtrl.data.makeFriend.display = false;
+                                         }
+                                         m.redraw()
+                                         });
+                                       }
+                                    );
+                                }}
+                              >Từ chối</a>
+                            </span>
+                          </div>
+                      )
+                      })}
+                    </div>
+                )}
+              </div>
+            </div>
+        ):""}
+      </div>
+] };
+
+module.exports = Friend;

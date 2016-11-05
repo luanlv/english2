@@ -1,0 +1,113 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+
+var HomeController = function(){
+  m.redraw.strategy("diff");
+  $.cookie('url', m.route(), {path: "/"});
+  api.rd("Controller: Home");
+  var ctrl = this;
+  ctrl.add = function(input){
+    ctrl.inputPost('')
+  };
+  ctrl.inputPost = m.prop('');
+  ctrl.inputComment = m.prop('');
+  
+  
+  if(!wsCtrl.data.post.init){
+    wsCtrl.send(wsCtrl.sendData("initPost", {}));
+  }
+  
+  ctrl.setup = function(){
+    //$('.ui.modal.show-post').modal("refresh");
+    wsCtrl.post().comment = wsCtrl.post().comment.reverse();
+    wsCtrl.post().post.commentLoading = false;
+    wsCtrl.post().post.commentShow = wsCtrl.post().comment.length;
+    wsCtrl.post().comment.forEach(function(comment){
+      wsCtrl.post().post.commentShow += comment.childCount;
+    });
+    console.log(wsCtrl.post().post.commentShow );
+    //api.showPost(wsCtrl.post().post.id);
+  };
+  
+  ctrl.setupNewQuestion = function(){
+    wsCtrl.initNewQuestion = true;
+  };
+  
+  ctrl.setupHotQuestion = function(){
+    wsCtrl.initHotQuestion = true;
+  };
+  
+  ctrl.addComment = function(postId, input){
+    var ip = input().trim();
+    //input = input.replace(/\n/g, '');
+    if (ip) {
+      wsCtrl.send(wsCtrl.sendData("comment", {parent: "post",  id: postId, c: ip}));
+      input('');
+    }
+    rd.home(function(){m.redraw()})
+  };
+  
+  ctrl.moreComment = function(postId, time){
+    wsCtrl.send(wsCtrl.sendData("moreComment", {id: postId, time: time}));
+  };
+  
+  
+  ctrl.addChildComment = function(commentId, input, postId){
+    var ip = input().trim();
+    //input = input.replace(/\n/g, '');
+    if (ip) {
+      wsCtrl.send(wsCtrl.sendData("comment", {parent: "comment", postId: postId,   id: commentId, c: ip}));
+      input('');
+    }
+    rd.home(function(){m.redraw()})
+  };
+  
+  if(m.route.param("postId") !== undefined){
+    wsCtrl.request = api.requestWithFeedback2({method: "GET", url: "/viewpost/" + m.route.param("postId")}, wsCtrl.post, ctrl.setup);
+    wsCtrl.send(wsCtrl.sendData("subPost", {id: m.route.param("postId")}));
+  }
+  
+  ctrl.post = m.prop({});
+  
+  // setup room all
+  ctrl.scrollBottom = true;
+  ctrl.id = "all";
+  ctrl.add = function () {
+    console.log("add")
+    var input = wsCtrl.inputChat(ctrl.id)().trim();
+    if (input) {
+      wsCtrl.send(wsCtrl.sendData("chat", {room: ctrl.id, d: input}));
+      wsCtrl.inputChat(ctrl.id)('');
+    }
+    rd.home(function(){m.redraw()})
+  };
+  if(!wsCtrl.getRooms("all").isInited) {
+    wsCtrl.send(wsCtrl.sendData("initChat", {t: "room", v: "all"}));
+    var intervalRoom = setInterval(function () {
+      wsCtrl.send(wsCtrl.sendData("sub", {t: "room", v: "all"}));
+    }, 30000);
+  }
+  
+  
+  
+  ctrl.onunload = function() {
+    if(wsCtrl.request !== undefined && wsCtrl.request.ready()){
+      wsCtrl.data.post.list[wsCtrl.arrayObjectIndexOf(wsCtrl.data.post.list, wsCtrl.post().post.id, "id")] = wsCtrl.post().post;
+      wsCtrl.send(wsCtrl.sendData("unSubPost", {}));
+      wsCtrl.request.ready(false);
+      
+      // out room all
+      // wsCtrl.send(wsCtrl.sendData("unSub", {t: "room", v: "all"}));
+      // wsCtrl.clearOldRoom("all");
+      // clearInterval(intervalRoom)
+      
+    }
+  };
+  
+  rd.home(function(){console.log("redraw home!"); m.redraw()});
+  
+};
+
+
+module.exports = HomeController;

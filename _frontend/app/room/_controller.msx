@@ -1,0 +1,44 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var RoomController = function() {
+  m.redraw.strategy("diff")
+  $.cookie('url', m.route(), {path: "/"});
+  var ctrl = this;
+  ctrl.id = m.route.param("roomId");
+  ctrl.param = m.prop(m.route.param("roomId"));
+  ctrl.loadMore = true;
+  ctrl.scrollBottom = true;
+  ctrl.add = function () {
+    var input = wsCtrl.inputChat(ctrl.id)().trim();
+    if (input) {
+      wsCtrl.send(wsCtrl.sendData("chat", {room: ctrl.id, d: input}));
+      wsCtrl.inputChat(ctrl.id)('');
+    }
+    rd.room(function(){m.redraw()})
+  };
+  
+  ctrl.setupHotQuestion = function(){
+    wsCtrl.initHotQuestion = true;
+  };
+  
+  wsCtrl.request2 = api.requestWithFeedback2({method: "GET", url: "/qa/hotquestion" }, wsCtrl.hotQuestion, ctrl.setupHotQuestion);
+  
+  wsCtrl.send(wsCtrl.sendData("initChat", {t: "room", v: ctrl.param()}));
+  
+  var intervalRoom = setInterval(function(){
+    wsCtrl.send(wsCtrl.sendData("sub", {t: "room", v: ctrl.param()}));
+  }, 30000);
+  
+  ctrl.onunload = function() {
+    wsCtrl.send(wsCtrl.sendData("unSub", {t: "room", v: ctrl.param()}));
+    wsCtrl.getRooms(ctrl.param()).isInited = false;
+    wsCtrl.clearOldRoom(ctrl.id);
+    clearInterval(intervalRoom)
+  };
+  
+  console.log("ctrl room !");
+  rd.room();
+}
+
+module.exports = RoomController;

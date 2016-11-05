@@ -1,0 +1,67 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+
+var ChatController = function(){
+  api.rd("Controller: Chat");
+  var ctrl = this;
+  m.redraw.strategy("diff");
+  ctrl.showChatDock = true;
+  ctrl.toggleChatDock = function(){
+    ctrl.showChatDock = !ctrl.showChatDock;
+  };
+  ctrl.makechat = function(user) {
+    rd.right(function(){
+      var pos = wsCtrl.getPosChat(user);
+      wsCtrl.data.chat[pos].display = true;
+      wsCtrl.data.chat[pos].hide = false;
+      api.focusById(wsCtrl.data.chat[pos].user.id);
+      m.redraw()
+    })
+  };
+  
+  ctrl.toggleChat = function(num){
+    wsCtrl.data.chat[num].hide = !wsCtrl.data.chat[num].hide;
+    var index = wsCtrl.arrayObjectIndexOf2(wsCtrl.storage.chat, wsCtrl.data.chat[num].user.id, "id")
+    if(index > -1){
+      wsCtrl.storage.chat[index].hide = wsCtrl.data.chat[num].hide;
+      $.localStorage.set('chat:' + wsCtrl.userId, wsCtrl.storage.chat);
+    }
+  };
+  
+  ctrl.stopChat = function(num){
+    wsCtrl.data.chat[num].display = false;
+    wsCtrl.data.chat[num].input('');
+    var index = wsCtrl.arrayObjectIndexOf2(wsCtrl.storage.chat, wsCtrl.data.chat[num].user.id, "id");
+    if(index > -1){
+      wsCtrl.storage.chat.splice(index, 1);
+      $.localStorage.set('chat:' + wsCtrl.userId, wsCtrl.storage.chat);
+    }
+  };
+  
+  ctrl.add = function (num) {
+    var input = wsCtrl.data.chat[num].input().trim();
+    //input = input.replace(/\n/g, '');
+    if (input) {
+      wsCtrl.send(wsCtrl.sendData("m", {to: wsCtrl.data.chat[num].user.id, mes: input}));
+      //wsCtrl.data.chat[num].chat.push({f: "u0", mes: input});
+      //wsCtrl.data.chat[num].chat.push({f: "u1", mes: "received: " + input});
+    }
+    wsCtrl.data.chat[num].input('');
+  };
+  
+  ctrl.save = function(e) {
+    if (e.keyCode == 13) {
+      //this causes a redraw, since event handlers active auto-redrawing by default
+      ctrl.add()
+    }
+    else {
+      //we don't care about other keys, so don't redraw
+      m.redraw.strategy("none")
+    }
+  };
+  
+}
+
+
+module.exports = ChatController;

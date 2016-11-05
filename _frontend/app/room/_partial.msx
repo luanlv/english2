@@ -1,0 +1,113 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = {};
+
+Partial.Comments = function(ctrl){
+  return (
+      <div className="ui comments room-box">
+        <h5 className="ui dividing header">Room: {ctrl.id}
+          <span className="fr">
+            <i className="tiny users left middle aligned icon" style="margin: 0 5px;">{wsCtrl.getRooms(ctrl.id).u}</i>
+            <i className="tiny plug left middle aligned icon" style="margin: 0 5px;">{wsCtrl.getRooms(ctrl.id).c}</i>
+        </span>
+        </h5>
+        
+        <div className="box-commentWr">
+          <div className="box-comment"
+               config={function(element, isInit, context) {
+                 if(context.flagScroll == true) context.fixPos = context.prevScrollTop + element.scrollHeight - context.prevScrollHeight;
+                 if(wsCtrl.getRoom(ctrl.id).gettingPrev == true){
+                   element.scrollTop = context.prevScrollTop + element.scrollHeight - context.prevScrollHeight;
+                   if(downkey){
+                     context.flagScroll = false;
+                     $(element).on('scroll', function f2(){
+                       element.scrollTop = context.fixPos;
+                       $(document).on('mouseup', function mouseup2(){
+                         $(document).off('mouseup', mouseup2);
+                         $(element).off('scroll', f2);
+                         context.flagScroll = true;
+                         wsCtrl.getRoom(ctrl.id).gettingPrev = false;
+                       })
+                     })
+                   } else {
+                     wsCtrl.getRoom(ctrl.id).gettingPrev = false;
+                   }
+                 }
+            
+                 if(context.flagScroll == undefined) context.flagScroll = true
+            
+            
+                 if(context.run && wsCtrl.getRoom(ctrl.id).initOk){
+                   element.scrollTop = element.scrollHeight;
+                   context.run = false;
+                 }
+            
+                 if(!isInit){
+              
+                   context.run = true;
+                   $(element).on('scroll', function f1(){
+                     if(element.scrollHeight - element.scrollTop - element.clientHeight > 50){
+                       ctrl.scrollBottom = false;
+                     } else {
+                       ctrl.scrollBottom = true;
+                     }
+                     if(wsCtrl.getRoom(ctrl.id).initOk){
+                       if(element.scrollTop < 10 && wsCtrl.getRoom(ctrl.id).gettingPrev == false && wsCtrl.loadMoreComments(ctrl.id)){
+                         ctrl.loadMore = false;
+                         wsCtrl.getRoom(ctrl.id).gettingPrev = true;
+                         wsCtrl.send(wsCtrl.sendData("prevChat", {t: "room", v: ctrl.id , lastTime: wsCtrl.commentsInRoom(ctrl.id)[0].time}));
+                       }
+                     }
+                     context.prevScrollTop = element.scrollTop
+                   });
+                 }
+            
+                 var addLength = (element.scrollHeight - context.prevScrollHeight) || 0;
+            
+            
+                 if(ctrl.scrollBottom){
+                   element.scrollTop = element.scrollHeight;
+                 }
+                 context.prevScrollTop = element.scrollTop;
+                 context.prevScrollHeight = element.scrollHeight
+               }
+               }
+          >
+            {(!wsCtrl.getRoom(ctrl.id).initOk)?(
+                <div className="ui active loader"></div>
+            ):(
+                <div
+                >
+                  {wsCtrl.commentsInRoom(ctrl.id).map(function(comment){
+                    return (
+                        <div className="comment"
+                             key={comment.time}
+                        >
+                          <a className="avatar ulpt" href={"/@/" + comment.userId} config={m.route}>
+                            <img src={comment.avatar}/>
+                          </a>
+                          <div className="content">
+                            <a className="author ulpt" href={"/@/" + comment.userId} config={m.route}>{comment.user}</a>
+                            <div className=" metadata fr">
+                              <span className="date">{api.time(comment.time)}</span>
+                            </div>
+                            <div className="text">
+                              {m.trust(api.post(comment.comment))}
+                            </div>
+                          
+                          </div>
+                        </div>
+                    )
+                  })
+                  }
+                </div>
+            )
+            }
+          </div>
+        </div>
+      </div>
+  )
+}
+
+module.exports = Partial;

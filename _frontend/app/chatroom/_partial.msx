@@ -1,0 +1,85 @@
+var wsCtrl = require('../_wsCtrl.js');
+var api = require('../_api.msx');
+
+var Partial = {};
+
+Partial.create = function(){
+  return (
+      <div className="ui form fluid popup create-room">
+        <div className="two fields">
+          <div className="field">
+            <label>Tên phòng</label>
+            <input type="text" placeholder="Tên phòng"/>
+          </div>
+          <div className="field">
+            <label>Mô tả</label>
+            <input type="text" placeholder="Mô tả"/>
+          </div>
+        </div>
+        
+        <div className="two fields">
+          <div className="grouped field">
+            <label>Level</label>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Elementary</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Intermediate</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Advanced</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Proficient</label>
+              </div>
+            </div>
+          </div>
+          <div className="grouped field">
+            <label>Kỹ năng</label>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Speaking</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Listening</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Wriring</label>
+              </div>
+            </div>
+            <div className="field">
+              <div className="ui radio checkbox">
+                <input type="radio" name="fruit" tabindex="0" className="hidden"/>
+                <label>Reading</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="field">
+          <button className="button">Create</button>
+        </div>
+      
+      </div>
+  )
+}
+
+module.exports = Partial;

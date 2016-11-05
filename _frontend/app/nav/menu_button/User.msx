@@ -1,0 +1,71 @@
+var wsCtrl = require('../../_wsCtrl.js');
+var api = require('../../_api.msx');
+
+var UserButton = function(ctrl){ return [
+      <a href="javascript:void(0)" className="item user-button fix-icon" data-content="Thông tin cá nhân" data-position="bottom center"
+         onclick={function(){rd.nav(ctrl.toggleUser())}}
+         config={function(el, isInited){
+              if(!isInited){
+                var prepPopup = $(el);
+                prepPopup.popup({inline: true, on: 'manual'});
+                prepPopup.hover(function(){
+                  if(!ctrl.displayUser){prepPopup.popup('show');}
+                });
+                prepPopup.on('click mouseleave', function(){
+                  prepPopup.popup('hide');
+                });
+              }
+             }}
+      >
+        <i className="large user icon"></i>
+        {wsCtrl.userName}
+      </a>,
+      <div className="notifyWr">
+        {ctrl.displayUser?(
+        <div className="inUser"
+             config={function(el, isInit, ctx){
+               if(!isInit){
+
+                  $(el).on('mouseleave', function(){
+                     if(!$('.menu:hover').length > 0){
+                        $(el).unbind('mouseleave');
+                        $('.menu').unbind('mouseleave');
+                        ctrl.displayUser = false;
+                        rd.nav(function(){m.redraw()})
+                     }
+                  });
+
+                   $('.menu').on('mouseleave', function(){
+                      if(!$(el).filter(':hover').length > 0){
+                        $(el).unbind('mouseleave');
+                        $('.menu').unbind('mouseleave');
+                        ctrl.displayUser = false;
+                        rd.nav(function(){m.redraw()})
+                     }
+                    })
+               }
+             }}
+        >
+          <div className="corner-right"><div className="tr"></div></div>
+          <div className="ui  attracted segment notify-content sha3">
+            <a href={"/@/" + wsCtrl.userId} class="fluid ui small button"
+              config={m.route}
+              onclick={function(){
+                ctrl.displayUser = false;
+                rd.nav(function(){m.redraw()})
+              }}
+            >
+              <i class="user icon"></i>
+              Thông tin
+            </a>
+            <br/>
+            <a href="/logout" class="fluid ui small button">
+              <i class="sign out icon"></i>
+              Đăng xuất
+            </a>
+          </div>
+        </div>):""}
+      </div>
+] }
+
+module.exports = UserButton;
