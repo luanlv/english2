@@ -1,0 +1,14 @@
+var Sidebar = require('../_sidebar.msx');
+
+var View = function(ctrl){
+  return [
+      Sidebar(ctrl),
+      <div className="pusher">
+        <div className="ui segment">
+          <h2>Admin page!</h2>
+        </div>
+      </div>
+  ]
+};
+
+module.exports = View;

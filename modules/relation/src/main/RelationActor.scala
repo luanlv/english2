@@ -51,10 +51,10 @@ private[relation] final class RelationActor(
       sender ! friends.map(id => lightUser(id).get).toList
     }
 
-    case GetOnlineFriends(userId) => onlineFriends(userId) pipeTo sender
+    case GetOnlineFriends(userId) => onlineFriends2(userId) pipeTo sender
 
     // triggers following reloading for this user id
-    case ReloadOnlineFriends(userId) => onlineFriends(userId) foreach {
+    case ReloadOnlineFriends(userId) => onlineFriends2(userId) foreach {
       case onlineFriends =>
         bus.publish(SendTo(userId, JsonView.writeOnlineFriends(onlineFriends)), 'users)
     }
@@ -87,6 +87,7 @@ private[relation] final class RelationActor(
       val friendsPlaying = filterFriendsPlaying(friends)
       OnlineFriends(friends, friendsPlaying)
     }
+
   private def onlineFriends2(userId: String): Fu[List[LightUser]] =
     api fetchFriends userId map { ids =>
       ids.flatMap(onlines.get).toList

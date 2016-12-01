@@ -1,0 +1,9 @@
+var Controller = require('./_controller.msx');
+var View = require('./_view.msx');
+
+var Main = {
+  controller: Controller,
+  view: View
+}
+
+module.exports = Main;

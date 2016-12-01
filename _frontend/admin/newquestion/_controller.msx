@@ -1,0 +1,18 @@
+var Controller = function(){
+  var ctrl = this;
+  
+  ctrl.data = m.prop(data());
+  ctrl.type = m.route.param('type');
+  
+  // $('.ui.sidebar').sidebar('show');
+};
+
+
+var data = m.prop({
+  typeNum: 1,
+  question: "",
+  answers: ["", "", "", ""],
+  key: ""
+});
+
+module.exports = Controller;

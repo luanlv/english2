@@ -1,0 +1,103 @@
+
+
+var View = function(ctrl){
+  return [
+    <div className="ui  segment">
+      <h2>(type 1)Eg: Choose the right word for the given definition.</h2>
+      <strong>1. bad or hurting others</strong> <br/>
+      a. afraid <br/>
+      b. clever <br/>
+      c. cruel <br/>
+      d. hunt
+    </div>,
+    <div className="ui segment">
+      <div className="ui form">
+        <h4 class="ui dividing header">Type 1</h4>
+        <div className="field">
+          <label>Question</label>
+          <div className="field">
+            <input type="text"
+              value={ctrl.data().question}
+              onkeyup={function(event){
+                ctrl.data().question = $(event.target).val()
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="field">
+          <label>Answers</label>
+          <div className="fields">
+            {ctrl.data().answers.map(function(answer, index){
+              return (
+                <div className="field">
+                  <input type="text" value={answer}
+                    onkeyup={function(event){
+                      ctrl.data().answers[index] = $(event.target).val()
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        
+        <div className="field">
+          <label>Key</label>
+          <div className="fields">
+            <div className="field">
+              <input type="text" value={ctrl.data().key}
+                 onkeyup={function(event){
+                   ctrl.data().key = $(event.target).val()
+                 }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ui button" tabindex="0"
+        onclick={function(event){
+          if(check(ctrl.data)){
+            var sendJson = $.extend(true, {}, ctrl.data())
+            sendJson.answers = sendJson.answers.toString();
+            sendJson.key = sendJson.key.toString();
+            console.log(ctrl.data())
+            $.ajax({
+              type: "POST",
+              url: "/api/admin/question/new",
+              // The key needs to match your method's input parameter (case-sensitive).
+              data: JSON.stringify(sendJson),
+              contentType: "application/json; charset=utf-8",
+              dataType: "text",
+              success: function(data){
+                m.route('/edit/' + data)
+              },
+              failure: function(errMsg) {
+                alert(errMsg);
+              }
+            });
+            
+          } else {
+            alert("Missing some fields!")
+          }
+        }}
+      >Submit question</div>
+    </div>
+  ]
+};
+
+var check = function(data){
+  if(data().question.length > 0 &&
+      data().answers[0].length > 0 &&
+      data().answers[1].length > 0 &&
+      data().answers[2].length > 0 &&
+      data().answers[3].length > 0 &&
+      data().key.length > 0
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+module.exports = View;

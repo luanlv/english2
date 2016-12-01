@@ -1,0 +1,18 @@
+var Api = require('../_api.msx');
+
+
+var Controller = function(){
+  var ctrl = this;
+  
+  ctrl.data = m.prop({});
+  ctrl.setup = function(){
+    ctrl.data().answers = ctrl.data().answers.split(',');
+    m.redraw();
+  }
+  
+  ctrl.request = Api.requestWithFeedback({method: "GET", url: "/api/admin/question/get/" + m.route.param('id')}, ctrl.data, ctrl.setup);
+ 
+};
+
+
+module.exports = Controller;

@@ -1,0 +1,32 @@
+var Api = {}
+
+Api.requestWithFeedback = function(args, bind, fn, fnError) {
+  
+  var data = m.prop();
+  var completed = m.prop(false);
+  var complete = function() {
+    completed(true)
+  };
+  args.background = true;
+  args.config = function(xhr) {
+    xhr.timeout = 4000;
+    xhr.ontimeout = function() {
+      complete();
+      m.redraw();
+    }
+  };
+  return {
+    request: m.request(args).then(data).then(function(data){
+      if(bind !== undefined) bind(data);
+      if(fn !== undefined) fn();
+      complete();
+      m.redraw();
+    }, function(error){
+      if(fnError !== undefined)  fnError()
+    }),
+    data: data,
+    ready: completed
+  }
+};
+
+module.exports = Api;

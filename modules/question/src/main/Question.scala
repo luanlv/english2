@@ -135,7 +135,6 @@ private[question] object Question {
       )
     }
   }
-
 }
 
 private[question] case class Answer(

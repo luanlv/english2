@@ -18,19 +18,20 @@ import lila.common.LilaCookie
 import lila.common.PimpedJson._
 import lila.db.dsl._
 import lila.db.BSON.BSONJodaDateTimeHandler
-import reactivemongo.play.json._
-import spray.json._
-
+import BSONHandlers._
 object VocabRepo {
 
   private lazy val coll = Env.current.vocabColl
 
-  private def counter = lila.counter.Env.current.api
 
-  def demo(json: JsObject) = {
-    coll.insert(JsBSONHandlers.writer.writeObject(json)++($id(counter.getNextId("all"))))
+
+  def insert(data: Vocab) = {
+    coll.insert(data)
   }
 
+  def get(id: Int) = {
+    coll.uno[Vocab]($doc("_id" -> id))
+  }
 
 }
 

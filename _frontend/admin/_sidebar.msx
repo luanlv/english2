@@ -1,0 +1,18 @@
+var Sidebar = function(ctrl){
+  return [
+    <div className="ui sidebar inverted vertical visible menu"
+    >
+      <a className="item" href="#/">
+        Home
+      </a>
+      <a className="item" href="#/new/1">
+        Type 1
+      </a>
+      <a className="item" href="#/new/2">
+        Type 2
+      </a>
+    </div>
+  ]
+};
+
+module.exports = Sidebar;

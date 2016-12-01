@@ -1,0 +1,9 @@
+
+var Controller = function(){
+  var ctrl = this;
+  
+  // $('.ui.sidebar').sidebar('show');
+};
+
+
+module.exports = Controller;

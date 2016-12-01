@@ -14,7 +14,7 @@ var NavView = function(ctrl){
   return (
       <div className="ui top small blue inverted fixed  menu sha">
         <div className="ui top small blue inverted fixed  menu sha" style="width: 1000px;left: 0; right: 0; margin: 0 auto;">
-          <div class={(wsCtrl.game?"menuDisable":"")}></div>
+          <div className={(wsCtrl.game?"menuDisable":"")}></div>
           <a href="/"  data-content="Trang chủ" data-position="bottom left"
              className={((m.route() == "/")?"active":"") + " item route-button route fix-icon"}
              config={function(el, isInited){
@@ -34,15 +34,6 @@ var NavView = function(ctrl){
              }}
           >
             <i className="large browser icon"></i>
-          </a>
-  
-          <a id={(wsCtrl.game?"gameButton":"")} href="javascript:void(0)"
-          className="item route-button route fix-icon"
-            onclick={function(){
-              api.toggleGame()
-            }}
-          >
-          <i className="large icon game"></i>
           </a>
           
           
@@ -68,6 +59,14 @@ var NavView = function(ctrl){
           
           
           {(wsCtrl.userId.length>0)?(<div className="right menu ">
+  
+            <div id={(wsCtrl.game?"gameButton":"")} className="item fix-icon" style="cursor:pointer"
+                 onclick={function(){
+                  api.toggleGame()
+                 }}
+            >
+              <i className="large icon game"></i>
+            </div>
             
             <div className="item fix-icon" data-content="Trực tuyến" data-position="bottom right"
                  config={function(el, isInited){

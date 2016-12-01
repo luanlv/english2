@@ -8,16 +8,37 @@ var GameView = function(ctrl) {
   return (
       <div className={"gameBg " + (wsCtrl.game?"active":"")}>
       <div className="gameWr">
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        <div className="game"> gaming </div>
-        
+        <div className="ui grid  main-content">
+  
+          <div class="ui one column stackable aligned page grid">
+            <div class="column three wide"></div>
+            <div class="column ten wide">
+              <div class="ui middle aligned divided list">
+                <div class="item">
+                  <div class="right floated content">
+                    <div class="ui button">Add</div>
+                  </div>
+                  <img class="ui avatar image" src="http://placehold.it/140x100"/>
+                  <div class="content">
+                    Lena
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="right floated content">
+                    <div class="ui button">Add</div>
+                  </div>
+                  <img class="ui avatar image" src="http://placehold.it/140x100"/>
+                  <div class="content">
+                    Lindsay
+                  </div>
+                </div>
+  
+              </div>
+            </div>
+            <div class="column three wide"></div>
+          </div>
+          
+        </div>
       </div>
       </div>
   )

@@ -1,11 +1,10 @@
 package lila.security
 
-import play.api.mvc.Results.Forbidden
-import play.api.mvc.{ Action, RequestHeader, Result }
+import play.api.mvc.RequestHeader
 
 import lila.common.HTTPRequest._
 
-final class CSRFRequestHandler(domain: String) {
+final class CSRFRequestHandler(domain: String, enabled: Boolean) {
 
   private def logger = lila.log("csrf")
 
@@ -29,10 +28,10 @@ final class CSRFRequestHandler(domain: String) {
           lila.mon.http.csrf.forbidden()
           logger.info(print(req))
         }
-        false
+//        !enabled // ignore if disabled
+        true
     }
   }
-
   private val topDomain = s"://$domain"
   private val subDomain = s".$domain"
 

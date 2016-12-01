@@ -13,8 +13,14 @@ final class I18nRequestHandler(
   def apply(req: RequestHeader): Option[Handler] =
     if (HTTPRequest.isRedirectable(req) &&
       req.host != cdnDomain &&
-      pool.domainLang(req).isEmpty) Some(Action(Redirect(redirectUrl(req))))
-    else None
+      pool.domainLang(req).isEmpty){
+      println("=== Redirect")
+        Some(Action(Redirect(redirectUrl(req))))
+    }
+    else {
+      println(" case none")
+      None
+    }
 
   def forUser(req: RequestHeader, userOption: Option[lila.user.User]): Option[Result] = for {
     userLang <- userOption.flatMap(_.lang)

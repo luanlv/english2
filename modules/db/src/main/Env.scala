@@ -8,11 +8,12 @@ import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.util.{ Failure, Success, Try }
 
 final class Env(
-    name: String,
-    config: Config,
-    lifecycle: play.api.inject.ApplicationLifecycle) {
+                 name: String,
+                 config: Config,
+                 lifecycle: play.api.inject.ApplicationLifecycle) {
+
   lazy val (connection, dbName) = {
-    val driver = new MongoDriver(Some(config))
+    val driver = MongoDriver(config)
 
     registerDriverShutdownHook(driver)
 
@@ -52,7 +53,6 @@ final class Env(
       logger.info(s"[$lnm] Stopping the MongoDriver...")
       Future(mongoDriver.close())
     }
-
 }
 
 object Env {

@@ -1,0 +1,12 @@
+
+var Home = require("./home/main.msx");
+var NewQuestion = require("./newquestion/main.msx");
+var EditQuestion = require("./editquestion/main.msx");
+
+m.route.mode = 'hash';
+
+m.route(document.body, "/", {
+  "/": Home,
+  "/new/:type": NewQuestion,
+  "/edit/:id" : EditQuestion
+});

@@ -1,7 +1,9 @@
 
+GET /admin                 controllers.Application.admin
 GET /                      controllers.Application.index
 
 #GET /test                  controllers.Test.test
+
 GET /test2                  controllers.Test.test2
 GET /?                     controllers.Lobby.home
 GET /post/:postId          controllers.Application.post(postId: String)
@@ -77,6 +79,8 @@ GET     /api/getUser/:user             controllers.API.getInformationUser(user: 
 GET     /api/listfollow/:userId        controllers.API.getListFollower(userId: String)
 GET     /api/listfriend/:userId        controllers.API.getListFriend(userId: String)
 
+POST    /api/admin/question/new       controllers.Admin.newQuestion
+GET     /api/admin/question/get/:id  controllers.Admin.getQuestion(id: Int)
 # Assets
 GET   /file/:filename                 controllers.FileController.getFile(filename: String)
 GET   /assets/*file                    controllers.Assets.at(path="/public", file)

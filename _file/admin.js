@@ -1,147 +1,402 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Api = {}
 
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-
-// import CountButton from './CountButton.jsx';
-// import CountImage from './CountImage.jsx';
-
-var data = [{ id: 1, author: "Pete Hunt", text: "This is one *comment*" }, { id: 2, author: "Jordan Walke", text: "This is *another* **comment**" }];
-
-var CommentList = React.createClass({
-  displayName: "CommentList",
-
-  render: function render() {
-    var commentNodes = this.props.data.map(function (comment) {
-      return React.createElement(
-        Comment,
-        { author: comment.author },
-        comment.text
-      );
-    });
-    return React.createElement(
-      "div",
-      { className: "commentList" },
-      commentNodes
-    );
-  }
-});
-
-var CommentForm = React.createClass({
-  displayName: "CommentForm",
-
-  getInitialState: function getInitialState() {
-    return { author: '', text: '' };
-  },
-  handleAuthorChange: function handleAuthorChange(e) {
-    this.setState({ author: e.target.value });
-  },
-  handleTextChange: function handleTextChange(e) {
-    this.setState({ text: e.target.value });
-  },
-  handleSubmit: function handleSubmit(e) {
-    e.preventDefault();
-    var author = this.state.author.trim();
-    var text = this.state.text.trim();
-    if (!text || !author) {
-      return;
+Api.requestWithFeedback = function(args, bind, fn, fnError) {
+  
+  var data = m.prop();
+  var completed = m.prop(false);
+  var complete = function() {
+    completed(true)
+  };
+  args.background = true;
+  args.config = function(xhr) {
+    xhr.timeout = 4000;
+    xhr.ontimeout = function() {
+      complete();
+      m.redraw();
     }
-    this.props.onCommentSubmit({ author: author, text: text });
-    this.setState({ author: '', text: '' });
-  },
-  render: function render() {
-    return React.createElement(
-      "form",
-      { className: "commentForm", onSubmit: this.handleSubmit },
-      React.createElement("input", { type: "text", placeholder: "Your name",
-        value: this.state.author,
-        onChange: this.handleAuthorChange
-      }),
-      React.createElement("input", { type: "text", placeholder: "Say something ...",
-        value: this.state.text,
-        onChange: this.handleTextChange
-      }),
-      React.createElement("input", { type: "submit", value: "Post" })
-    );
+  };
+  return {
+    request: m.request(args).then(data).then(function(data){
+      if(bind !== undefined) bind(data);
+      if(fn !== undefined) fn();
+      complete();
+      m.redraw();
+    }, function(error){
+      if(fnError !== undefined)  fnError()
+    }),
+    data: data,
+    ready: completed
   }
+};
+
+module.exports = Api;
+},{}],2:[function(require,module,exports){
+var Sidebar = function(ctrl){
+  return [
+    {tag: "div", attrs: {className:"ui sidebar inverted vertical visible menu"
+    }, children: [
+      {tag: "a", attrs: {className:"item", href:"#/"}, children: [
+        "Home"
+      ]}, 
+      {tag: "a", attrs: {className:"item", href:"#/new/1"}, children: [
+        "Type 1"
+      ]}, 
+      {tag: "a", attrs: {className:"item", href:"#/new/2"}, children: [
+        "Type 2"
+      ]}
+    ]}
+  ]
+};
+
+module.exports = Sidebar;
+},{}],3:[function(require,module,exports){
+var Api = require('../_api.msx');
+
+
+var Controller = function(){
+  var ctrl = this;
+  
+  ctrl.data = m.prop({});
+  ctrl.setup = function(){
+    ctrl.data().answers = ctrl.data().answers.split(',');
+    m.redraw();
+  }
+  
+  ctrl.request = Api.requestWithFeedback({method: "GET", url: "/api/admin/question/get/" + m.route.param('id')}, ctrl.data, ctrl.setup);
+ 
+};
+
+
+module.exports = Controller;
+},{"../_api.msx":1}],4:[function(require,module,exports){
+var Sidebar = require('../_sidebar.msx');
+var Type1 = require('./type/1.msx');
+var Type2 = require('./type/2.msx');
+var list=[Type1, Type2];
+
+var View = function(ctrl){
+  return (
+      {tag: "div", attrs: {}, children: [
+        Sidebar(ctrl), 
+        {tag: "div", attrs: {className:"pusher"}, children: [
+          (!ctrl.request.ready())?"Loading":(
+              list[ctrl.data().typeNum - 1](ctrl)
+          )
+        ]}
+      ]}
+  )
+};
+
+module.exports = View;
+},{"../_sidebar.msx":2,"./type/1.msx":6,"./type/2.msx":7}],5:[function(require,module,exports){
+var Controller = require('./_controller.msx');
+var View = require('./_view.msx');
+
+var Main = {
+  controller: Controller,
+  view: View
+}
+
+module.exports = Main;
+},{"./_controller.msx":3,"./_view.msx":4}],6:[function(require,module,exports){
+
+
+var View = function(ctrl){
+  return [
+    {tag: "div", attrs: {className:"ui  segment"}, children: [
+      {tag: "h2", attrs: {}, children: ["(type ", ctrl.data().typeNum, ") Question ID : ", ctrl.data().id]}
+    ]},
+    {tag: "div", attrs: {className:"ui segment"}, children: [
+      {tag: "div", attrs: {className:"ui form"}, children: [
+        {tag: "h4", attrs: {class:"ui dividing header"}, children: ["Type 1"]}, 
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Question"]}, 
+          {tag: "div", attrs: {className:"field"}, children: [
+            {tag: "input", attrs: {type:"text", 
+              value:ctrl.data().question, 
+              onkeyup:function(event){
+                ctrl.data().question = $(event.target).val()
+              }}
+            }
+          ]}
+        ]}, 
+        
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Answers"]}, 
+          {tag: "div", attrs: {className:"fields"}, children: [
+            ctrl.data().answers.map(function(answer, index){
+              return (
+                {tag: "div", attrs: {className:"field"}, children: [
+                  {tag: "input", attrs: {type:"text", value:answer, 
+                    onkeyup:function(event){
+                      ctrl.data().answers[index] = $(event.target).val()
+                    }}
+                  }
+                ]}
+              )
+            })
+          ]}
+        ]}, 
+        
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Key"]}, 
+          {tag: "div", attrs: {className:"fields"}, children: [
+            {tag: "div", attrs: {className:"field"}, children: [
+              {tag: "input", attrs: {type:"text", value:ctrl.data().key, 
+                 onkeyup:function(event){
+                   ctrl.data().key = $(event.target).val()
+                 }}
+              }
+            ]}
+          ]}
+        ]}
+      ]}, 
+      {tag: "div", attrs: {class:"ui button", tabindex:"0", 
+        onclick:function(event){
+          if(check(data)){
+            var sendJson = $.extend(true, {}, ctrl.data())
+            sendJson.answers = sendJson.answers.toString();
+            sendJson.key = sendJson.key.toString();
+            console.log(ctrl.data())
+            $.ajax({
+              type: "POST",
+              url: "/api/admin/question/new",
+              // The key needs to match your method's input parameter (case-sensitive).
+              data: JSON.stringify(sendJson),
+              contentType: "application/json; charset=utf-8",
+              dataType: "text",
+              success: function(data){
+                alert(data);
+              },
+              failure: function(errMsg) {
+                alert(errMsg);
+              }
+            });
+            
+          } else {
+            alert("Missing some fields!")
+          }
+        }
+      }, children: ["Submit question"]}
+    ]}
+  ]
+};
+
+var check = function(data){
+  if(ctrl.data().question.length > 0 &&
+      ctrl.data().answers[0].length > 0 &&
+      ctrl.data().answers[1].length > 0 &&
+      ctrl.data().answers[2].length > 0 &&
+      ctrl.data().answers[3].length > 0 &&
+      ctrl.data().key.length > 0
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+module.exports = View;
+},{}],7:[function(require,module,exports){
+var View = function(ctrl){
+  return [
+    {tag: "div", attrs: {className:"ui segment"}, children: [
+      {tag: "h2", attrs: {}, children: ["(type 2)Eg: Choose the right word for the given definition."]}, 
+      {tag: "strong", attrs: {}, children: ["1. bad or hurting others"]}, " ", {tag: "br", attrs: {}}, 
+      "a. afraid ", {tag: "br", attrs: {}}, 
+      "b. clever ", {tag: "br", attrs: {}}, 
+      "c. cruel ", {tag: "br", attrs: {}}, 
+      "d. hunt"
+    ]}
+  ]
+};
+
+
+module.exports = View;
+},{}],8:[function(require,module,exports){
+
+var Home = require("./home/main.msx");
+var NewQuestion = require("./newquestion/main.msx");
+var EditQuestion = require("./editquestion/main.msx");
+
+m.route.mode = 'hash';
+
+m.route(document.body, "/", {
+  "/": Home,
+  "/new/:type": NewQuestion,
+  "/edit/:id" : EditQuestion
+});
+},{"./editquestion/main.msx":5,"./home/main.msx":11,"./newquestion/main.msx":14}],9:[function(require,module,exports){
+
+var Controller = function(){
+  var ctrl = this;
+  
+  // $('.ui.sidebar').sidebar('show');
+};
+
+
+module.exports = Controller;
+},{}],10:[function(require,module,exports){
+var Sidebar = require('../_sidebar.msx');
+
+var View = function(ctrl){
+  return [
+      Sidebar(ctrl),
+      {tag: "div", attrs: {className:"pusher"}, children: [
+        {tag: "div", attrs: {className:"ui segment"}, children: [
+          {tag: "h2", attrs: {}, children: ["Admin page!"]}
+        ]}
+      ]}
+  ]
+};
+
+module.exports = View;
+},{"../_sidebar.msx":2}],11:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"./_controller.msx":9,"./_view.msx":10}],12:[function(require,module,exports){
+var Controller = function(){
+  var ctrl = this;
+  
+  ctrl.data = m.prop(data());
+  ctrl.type = m.route.param('type');
+  
+  // $('.ui.sidebar').sidebar('show');
+};
+
+
+var data = m.prop({
+  typeNum: 1,
+  question: "",
+  answers: ["", "", "", ""],
+  key: ""
 });
 
-var Comment = React.createClass({
-  displayName: "Comment",
+module.exports = Controller;
+},{}],13:[function(require,module,exports){
+var Sidebar = require('../_sidebar.msx');
+var Type1 = require('./type/1.msx');
+var Type2 = require('./type/2.msx');
+var list=[Type1, Type2];
 
-  rawMarkup: function rawMarkup() {
-    var md = new Remarkable();
-    var rawMarkup = md.render(this.props.children.toString());
-    return { __html: rawMarkup };
-  },
-  render: function render() {
-    var md = new Remarkable();
-    return React.createElement(
-      "div",
-      { className: "comment" },
-      React.createElement(
-        "h2",
-        { className: "commentAuthor" },
-        this.props.author
-      ),
-      React.createElement("span", { dangerouslySetInnerHTML: this.rawMarkup() })
-    );
+var View = function(ctrl){
+  return (
+      {tag: "div", attrs: {}, children: [
+        Sidebar(ctrl), 
+        {tag: "div", attrs: {className:"pusher"}, children: [
+            list[ctrl.type - 1](ctrl)
+        ]}
+      ]}
+  )
+};
+
+module.exports = View;
+},{"../_sidebar.msx":2,"./type/1.msx":15,"./type/2.msx":16}],14:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"./_controller.msx":12,"./_view.msx":13}],15:[function(require,module,exports){
+
+
+var View = function(ctrl){
+  return [
+    {tag: "div", attrs: {className:"ui  segment"}, children: [
+      {tag: "h2", attrs: {}, children: ["(type 1)Eg: Choose the right word for the given definition."]}, 
+      {tag: "strong", attrs: {}, children: ["1. bad or hurting others"]}, " ", {tag: "br", attrs: {}}, 
+      "a. afraid ", {tag: "br", attrs: {}}, 
+      "b. clever ", {tag: "br", attrs: {}}, 
+      "c. cruel ", {tag: "br", attrs: {}}, 
+      "d. hunt"
+    ]},
+    {tag: "div", attrs: {className:"ui segment"}, children: [
+      {tag: "div", attrs: {className:"ui form"}, children: [
+        {tag: "h4", attrs: {class:"ui dividing header"}, children: ["Type 1"]}, 
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Question"]}, 
+          {tag: "div", attrs: {className:"field"}, children: [
+            {tag: "input", attrs: {type:"text", 
+              value:ctrl.data().question, 
+              onkeyup:function(event){
+                ctrl.data().question = $(event.target).val()
+              }}
+            }
+          ]}
+        ]}, 
+        
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Answers"]}, 
+          {tag: "div", attrs: {className:"fields"}, children: [
+            ctrl.data().answers.map(function(answer, index){
+              return (
+                {tag: "div", attrs: {className:"field"}, children: [
+                  {tag: "input", attrs: {type:"text", value:answer, 
+                    onkeyup:function(event){
+                      ctrl.data().answers[index] = $(event.target).val()
+                    }}
+                  }
+                ]}
+              )
+            })
+          ]}
+        ]}, 
+        
+        {tag: "div", attrs: {className:"field"}, children: [
+          {tag: "label", attrs: {}, children: ["Key"]}, 
+          {tag: "div", attrs: {className:"fields"}, children: [
+            {tag: "div", attrs: {className:"field"}, children: [
+              {tag: "input", attrs: {type:"text", value:ctrl.data().key, 
+                 onkeyup:function(event){
+                   ctrl.data().key = $(event.target).val()
+                 }}
+              }
+            ]}
+          ]}
+        ]}
+      ]}, 
+      {tag: "div", attrs: {class:"ui button", tabindex:"0", 
+        onclick:function(event){
+          if(check(ctrl.data)){
+            var sendJson = $.extend(true, {}, ctrl.data())
+            sendJson.answers = sendJson.answers.toString();
+            sendJson.key = sendJson.key.toString();
+            console.log(ctrl.data())
+            $.ajax({
+              type: "POST",
+              url: "/api/admin/question/new",
+              // The key needs to match your method's input parameter (case-sensitive).
+              data: JSON.stringify(sendJson),
+              contentType: "application/json; charset=utf-8",
+              dataType: "text",
+              success: function(data){
+                m.route('/edit/' + data)
+              },
+              failure: function(errMsg) {
+                alert(errMsg);
+              }
+            });
+            
+          } else {
+            alert("Missing some fields!")
+          }
+        }
+      }, children: ["Submit question"]}
+    ]}
+  ]
+};
+
+var check = function(data){
+  if(data().question.length > 0 &&
+      data().answers[0].length > 0 &&
+      data().answers[1].length > 0 &&
+      data().answers[2].length > 0 &&
+      data().answers[3].length > 0 &&
+      data().key.length > 0
+  ) {
+    return true
+  } else {
+    return false
   }
-});
+}
 
-var CommentBox = React.createClass({
-  displayName: "CommentBox",
-
-  getCommentsFromServer: function getCommentsFromServer() {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      cache: false,
-      success: function (data) {
-        this.setState({ data: data });
-      }.bind(this),
-      error: function (xhr, status, err) {
-        console.log(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  getInitialState: function getInitialState() {
-    return { data: [] };
-  },
-  handleCommentSubmit: function handleCommentSubmit(comment) {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: comment,
-      success: function (data) {
-        this.setState({ data: data });
-      }.bind(this),
-      error: function (xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  componentDidMount: function componentDidMount() {
-    this.getCommentsFromServer();
-    setInterval(this.getCommentsFromServer, this.props.pollInterval);
-  },
-  render: function render() {
-    return React.createElement(
-      "div",
-      { className: "commentBox" },
-      React.createElement(
-        "h1",
-        null,
-        "Comments !"
-      ),
-      React.createElement(CommentList, { data: this.state.data }),
-      React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit })
-    );
-  }
-});
-
-ReactDOM.render(React.createElement(CommentBox, { url: "/test", pollInterval: 2000 }), document.getElementById("app"));
-
-},{}]},{},[1]);
+module.exports = View;
+},{}],16:[function(require,module,exports){
+module.exports=require(7)
+},{}]},{},[8])

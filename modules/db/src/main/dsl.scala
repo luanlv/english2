@@ -21,7 +21,7 @@ import reactivemongo.api._
 import reactivemongo.api.collections.GenericQueryBuilder
 import reactivemongo.bson._
 
-trait dsl {
+trait dsl extends LowPriorityDsl {
 
   type Coll = reactivemongo.api.collections.bson.BSONCollection
   type Bdoc = BSONDocument
@@ -116,7 +116,8 @@ trait dsl {
   }
 
   def $rename(item: (String, String), items: (String, String)*)(implicit writer: BSONWriter[String, _ <: BSONValue]): BSONDocument = {
-    $doc("$rename" -> $doc((Seq(item) ++ items).map(Producer.nameValue2Producer[String]): _*))
+    $doc("$rename" -> $doc((item +: items).
+      map { case (k, v) => BSONElement(k, BSONString(v)) }))
   }
 
   def $setOnInsert(item: Producer[BSONElement], items: Producer[BSONElement]*): BSONDocument = {
@@ -128,7 +129,7 @@ trait dsl {
   }
 
   def $unset(field: String, fields: String*): BSONDocument = {
-    $doc("$unset" -> $doc((Seq(field) ++ fields).map(_ -> BSONString(""))))
+    $doc("$unset" -> $doc((Seq(field) ++ fields).map(k => BSONElement(k, BSONString("")))))
   }
 
   def $min(item: Producer[BSONElement]): BSONDocument = {
@@ -184,7 +185,7 @@ trait dsl {
   }
 
   def $currentDate(items: (String, CurrentDateValueProducer[_])*): BSONDocument = {
-    $doc("$currentDate" -> $doc(items.map(item => item._1 -> item._2.produce)))
+    $doc("$currentDate" -> $doc(items.map(item => BSONElement(item._1, item._2.produce))))
   }
   // End of Top Level Field Update Operators
   //**********************************************************************************************//
@@ -223,9 +224,9 @@ trait dsl {
   //**********************************************************************************************//
 
   /**
-   * Represents the inital state of the expression which has only the name of the field.
-   * It does not know the value of the expression.
-   */
+    * Represents the inital state of the expression which has only the name of the field.
+    * It does not know the value of the expression.
+    */
   trait ElementBuilder {
     def field: String
     def append(value: BSONDocument): BSONDocument = value
@@ -252,16 +253,16 @@ trait dsl {
     extends Expression[V]
 
   /**
-   * Expressions of this type can be cascaded. Examples:
-   *
-   * {{{
-   *  "age" $gt 50 $lt 60
-   *  "age" $gte 50 $lte 60
-   * }}}
-   *
-   */
+    * Expressions of this type can be cascaded. Examples:
+    *
+    * {{{
+    *  "age" $gt 50 $lt 60
+    *  "age" $gte 50 $lte 60
+    * }}}
+    *
+    */
   case class CompositeExpression(field: String, value: BSONDocument)
-      extends Expression[BSONDocument]
+    extends Expression[BSONDocument]
       with ComparisonOperators {
     override def append(value: BSONDocument): BSONDocument = {
       this.value ++ value
@@ -365,19 +366,22 @@ trait dsl {
 
   implicit class ElementBuilderLike(val field: String)
     extends ElementBuilder
-    with ComparisonOperators
-    with ElementOperators
-    with EvaluationOperators
-    with LogicalOperators
-    with ArrayOperators
-
-  implicit def toBSONElement[V <: BSONValue](expression: Expression[V])(implicit writer: BSONWriter[V, _ <: BSONValue]): Producer[BSONElement] = {
-    expression.field -> expression.value
-  }
+      with ComparisonOperators
+      with ElementOperators
+      with EvaluationOperators
+      with LogicalOperators
+      with ArrayOperators
 
   implicit def toBSONDocument[V <: BSONValue](expression: Expression[V])(implicit writer: BSONWriter[V, _ <: BSONValue]): BSONDocument =
     $doc(expression.field -> expression.value)
 
+}
+
+sealed trait LowPriorityDsl { self: dsl =>
+  // Priority lower than toBSONDocument
+  implicit def toBSONElement[V <: BSONValue](expression: Expression[V])(implicit writer: BSONWriter[V, _ <: BSONValue]): Producer[BSONElement] = {
+    BSONElement(expression.field, expression.value)
+  }
 }
 
 object dsl extends dsl with CollExt with QueryBuilderExt with CursorExt with Handlers

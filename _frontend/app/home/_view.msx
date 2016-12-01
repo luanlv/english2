@@ -102,15 +102,14 @@ var HomeView = function(ctrl) {
                   Partial.post(post, ctrl)
               )
             }),
-            (wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published === 1460882188511)?"":(
                 <div className="ui button"
                    onclick={
                      function(){
-                       console.log(wsCtrl.data.post.list[wsCtrl.data.post.list.length-1])
-                       wsCtrl.send(wsCtrl.sendData("morePost", {time: wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published}));
+                       var numPost = wsCtrl.data.post.list.length
+                       if(numPost > 0) wsCtrl.send(wsCtrl.sendData("morePost", {time: wsCtrl.data.post.list[numPost-1].published}));
                      }
                    }
-            >More post</div>)
+            >More post</div>
           ]
       )}
     

@@ -22,7 +22,7 @@ if(document.domain === "localhost"){
 }
 
 
-wsCtrl.game = false;
+wsCtrl.game = true;
 
 wsCtrl.ping = 0;
 wsCtrl.total = 0;
@@ -133,7 +133,7 @@ function initWs(){
   if(document.domain === "localhost") {
     wsCtrl.ws = new WebSocket("ws://" + document.domain + ":9000/socket?sri=" + sri);
   } else {
-    wsCtrl.ws = new WebSocket("ws://" + document.domain + ":8080/socket?sri=" + sri);
+    wsCtrl.ws = new WebSocket("ws://" + "socket." + document.domain + "/socket?sri=" + sri);
   }
   wsCtrl.ws.onopen = function(){
     console.log('WebSocket ok');
@@ -527,7 +527,7 @@ ctrl.listen = function(d){
           var mes = d.d.d;
           wsCtrl.commentsInRoom(roomId).push(
               {
-                avatar: (mes.user.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + mes.user.avatar):wsCtrl.defaultAvata,
+                avatar: (mes.user.avatar !== undefined && mes.user.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + mes.user.avatar):wsCtrl.defaultAvata,
                 userId: mes.user.id,
                 user: mes.user.name,
                 time: Date.now(),
@@ -566,7 +566,7 @@ ctrl.listen = function(d){
           listChats.map(function(chat){
             wsCtrl.commentsInRoom(roomId).unshift(
                 {
-                  avatar: chat.user.avatar.length>0?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
+                  avatar: (chat.user.avatar != undefined && chat.user.avatar.length>0)?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
                   userId: chat.user.id,
                   user: chat.user.name,
                   time: chat.time,
@@ -582,7 +582,7 @@ ctrl.listen = function(d){
             var listComments = listChats.map(function(chat){
 
             return {
-              avatar: chat.user.avatar.length>0?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
+              avatar: (chat.user.avatar != undefined && chat.user.avatar.length>0)?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
               userId: chat.user.userId,
               user: chat.user.name,
               time: chat.time,

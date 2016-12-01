@@ -1,0 +1,19 @@
+var Sidebar = require('../_sidebar.msx');
+var Type1 = require('./type/1.msx');
+var Type2 = require('./type/2.msx');
+var list=[Type1, Type2];
+
+var View = function(ctrl){
+  return (
+      <div>
+        {Sidebar(ctrl)}
+        <div className="pusher">
+          {(!ctrl.request.ready())?"Loading":(
+              list[ctrl.data().typeNum - 1](ctrl)
+          )}
+        </div>
+      </div>
+  )
+};
+
+module.exports = View;

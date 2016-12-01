@@ -281,37 +281,6 @@
 .stroke-black {
   stroke: #111; }
 
-.gameBg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin-top: 36px;
-  height: 100vh;
-  width: 100%;
-  z-index: 900;
-  display: none; }
-
-.gameBg.active {
-  display: block; }
-
-.menuDisable {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 36px;
-  background: rgba(100, 100, 100, 0.7);
-  z-index: 900; }
-
-#gameButton {
-  z-index: 901;
-  background: #FF4136; }
-
-.gameWr {
-  background: white;
-  width: 100%;
-  height: 100%; }
-
 .bg-navy {
   background-color: #001F3F; }
 
@@ -575,6 +544,37 @@
 .stroke-black {
   stroke: #111; }
 
+.gameBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-top: 36px;
+  height: 100vh;
+  width: 100%;
+  z-index: 900;
+  display: none; }
+
+.gameBg.active {
+  display: block; }
+
+.menuDisable {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 36px;
+  background: rgba(100, 100, 100, 0.4);
+  z-index: 900; }
+
+#gameButton {
+  z-index: 901;
+  background: #FF4136; }
+
+.gameWr {
+  background: white;
+  width: 100%;
+  height: 100%; }
+
 html, body {
   /*min-height: 1000px;*/
   height: 100%;
@@ -603,7 +603,7 @@ html, body {
 
 .main-content {
   width: 1000px !important;
-  margin: 0 !important; }
+  margin: 0 auto !important; }
 
 body {
   overflow-y: scroll !important; }

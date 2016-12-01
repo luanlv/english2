@@ -31,6 +31,11 @@ object Application extends LilaController{
   def index = Open { implicit  ctx =>
     Ok(views.html.index.home()).fuccess
   }
+
+  def admin = Open { implicit  ctx =>
+    Ok(views.html.admin.index()).fuccess
+  }
+
   def post(postId: String) = Open { implicit  ctx =>
     Ok(views.html.index.home()).fuccess
   }

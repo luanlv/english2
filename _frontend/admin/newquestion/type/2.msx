@@ -1,0 +1,15 @@
+var View = function(ctrl){
+  return [
+    <div className="ui segment">
+      <h2>(type 2)Eg: Choose the right word for the given definition.</h2>
+      <strong>1. bad or hurting others</strong> <br/>
+      a. afraid <br/>
+      b. clever <br/>
+      c. cruel <br/>
+      d. hunt
+    </div>
+  ]
+};
+
+
+module.exports = View;

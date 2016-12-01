@@ -19,9 +19,7 @@ object Test extends LilaController {
     Ok(views.html.test()).fuccess
   }
 
-
   def test2= Open { implicit ctx =>
-      env.test2(Json.obj("ok" -> "Ok"))
     Ok(Json.obj("result" -> "ok")).fuccess
   }
 }

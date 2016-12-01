@@ -1,19 +1,17 @@
-import BuildSettings.{project => _, _}
 import com.typesafe.sbt.packager.Keys.scriptClasspath
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 import play.Play.autoImport._
 import play.sbt.PlayImport._
 import play.twirl.sbt.Import._
 import PlayKeys._
-import sbt._
-import Keys._
+import sbt._, Keys._
 
 object ApplicationBuild extends Build {
 
   import BuildSettings._
   import Dependencies._
 
-  lazy val root = Project("lila", file("."))
+  lazy val root = Project("english", file("."))
     .enablePlugins(_root_.play.sbt.PlayScala)
     .dependsOn(api)
     .aggregate(api)
@@ -35,7 +33,7 @@ object ApplicationBuild extends Build {
       // offline := true,
       libraryDependencies ++= Seq(
         scalaz, scalalib, hasher, config, apache,
-        jgit, findbugs, RM, RPM, akka.actor, akka.slf4j,
+        jgit, findbugs, reactivemongo.driver, reactivemongo.iteratees, RPM, akka.actor, akka.slf4j,
         spray.caching, maxmind, spray.json,
         kamon.core, kamon.statsd, bigPipe,  java8compat, semver, scrimage),
       TwirlKeys.templateImports ++= Seq(
@@ -64,44 +62,44 @@ object ApplicationBuild extends Build {
   lazy val api = project("api", moduleCPDeps)
     .settings(
       libraryDependencies ++= provided(
-        play.api, hasher, config, apache, jgit, findbugs, RM,
+        play.api, hasher, config, apache, jgit, findbugs, reactivemongo.driver, reactivemongo.iteratees,
         kamon.core, kamon.statsd)
     ) aggregate (moduleRefs: _*)
 
 
   lazy val common = project("common").settings(
-    libraryDependencies ++= provided(play.api, play.test, RM, kamon.core)
+    libraryDependencies ++= provided(play.api, play.test, reactivemongo.driver, kamon.core)
   )
 
 
   lazy val db = project("db", Seq(common)).settings(
-    libraryDependencies ++= provided(play.test, play.api, RM, hasher)
+    libraryDependencies ++= provided(play.test, play.api, reactivemongo.driver, hasher)
   )
 
   lazy val memo = project("memo", Seq(common, db)).settings(
-    libraryDependencies ++= Seq(guava, findbugs, spray.caching) ++ provided(play.api, RM)
+    libraryDependencies ++= Seq(findbugs, spray.caching) ++ provided(play.api, reactivemongo.driver)
   )
 
 
   lazy val user = project("user", Seq(common, memo, db, hub)).settings(
-    libraryDependencies ++= provided(play.api, play.test, RM, hasher)
+    libraryDependencies ++= provided(play.api, play.test, reactivemongo.driver, hasher)
   )
 
   lazy val game = project("game", Seq(common, memo, db, hub, user)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, reactivemongo.iteratees)
   )
 
   lazy val security = project("security", Seq(common, hub, db, user)).settings(
-    libraryDependencies ++= provided(play.api, RM, maxmind, hasher)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, maxmind, hasher)
   )
 
 
   lazy val relation = project("relation", Seq(common, db, memo, hub, user, game, pref)).settings(
-    libraryDependencies ++= provided(play.api, RM, RPM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, RPM)
   )
 
   lazy val pref = project("pref", Seq(common, db, user)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver)
   )
 
 
@@ -112,7 +110,7 @@ object ApplicationBuild extends Build {
         (sourceManaged in Compile).value / "messages"
       )
     }.taskValue,
-    libraryDependencies ++= provided(play.api, RM, jgit)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, jgit)
   )
 
   lazy val notification = project("notification", Seq(common, user, hub)).settings(
@@ -133,27 +131,27 @@ object ApplicationBuild extends Build {
   )
 
   lazy val activity = project("activity", Seq(common, db, memo, hub, user, pref, relation, counter)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver)
   )
 
   lazy val question = project("question", Seq(common, db, memo, hub, user, pref, relation, counter)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver)
   )
 
   lazy val chatRoom = project("chatRoom", Seq(common, db, memo, hub, user, counter)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver)
   )
 
   lazy val userMessage = project("userMessage", Seq(common, db, memo, hub, user, counter)).settings(
-    libraryDependencies ++= provided(play.api, RM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver)
   )
 
   lazy val vocab = project("vocab" , Seq(common, db, memo, hub, user, counter)).settings(
-    libraryDependencies ++= provided(play.api, RM, RPM, spray.json)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, reactivemongo.iteratees, RPM, spray.json)
   )
 
   lazy val counter = project("counter", Seq(common, db, memo, hub)).settings(
-    libraryDependencies ++= provided(play.api, RM, RPM)
+    libraryDependencies ++= provided(play.api, reactivemongo.driver, RPM)
   )
 
 }

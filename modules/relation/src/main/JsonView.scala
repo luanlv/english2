@@ -1,5 +1,6 @@
 package lila.relation
 
+import lila.common.LightUser
 import lila.common.PimpedJson._
 import lila.hub.actorApi.relation.OnlineFriends
 import play.api.libs.json._
@@ -16,12 +17,11 @@ object JsonView {
       )
     }
 
-  def writeOnlineFriends(onlineFriends: OnlineFriends) = {
+  def writeOnlineFriends(onlineFriends: List[LightUser]) = {
     // We use 'd' for backward compatibility with the mobile client
     Json.obj(
       "t" -> "following_onlines",
-      "d" -> onlineFriends.users.map(_.titleName),
-      "playing" -> onlineFriends.playing
+      "d" -> onlineFriends
     )
   }
 

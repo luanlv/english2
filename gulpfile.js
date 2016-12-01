@@ -29,6 +29,14 @@ gulp.task('app', function() {
       });
 });
 
+gulp.task('admin', function() {
+  gulp.src('_frontend/admin/app.msx')
+      .pipe(browserify({
+        transform: ['mithrilify']
+      }))
+      .pipe(rename('admin.js'))
+      .pipe(gulp.dest('_file/'))
+});
 
 
 gulp.task('sass', function () {
@@ -77,9 +85,9 @@ gulp.task('serve', function () {
 
 gulp.task('watchjsx', ['app'], function () {
   gulp.watch('_frontend/app/{,*/}{,*/}*.msx', ['app']);
-  gulp.watch('_frontend/admin/{,*/}{,*/}*.jsx', ['admin']);
+  gulp.watch('_frontend/admin/{,*/}{,*/}*.msx', ['admin']);
   gulp.watch('_frontend/scss/{,*/}*.scss', ['sass']);
 });
 
 // Creating the default gulp task
-gulp.task('default', [  'app', 'sass', 'watchjsx', 'serve']);
+gulp.task('default', [  'app', 'admin', 'sass', 'watchjsx', 'serve']);

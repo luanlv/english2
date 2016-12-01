@@ -228,7 +228,7 @@ if(document.domain === "localhost"){
 }
 
 
-wsCtrl.game = false;
+wsCtrl.game = true;
 
 wsCtrl.ping = 0;
 wsCtrl.total = 0;
@@ -339,7 +339,7 @@ function initWs(){
   if(document.domain === "localhost") {
     wsCtrl.ws = new WebSocket("ws://" + document.domain + ":9000/socket?sri=" + sri);
   } else {
-    wsCtrl.ws = new WebSocket("ws://" + document.domain + ":8080/socket?sri=" + sri);
+    wsCtrl.ws = new WebSocket("ws://" + "socket." + document.domain + "/socket?sri=" + sri);
   }
   wsCtrl.ws.onopen = function(){
     console.log('WebSocket ok');
@@ -733,7 +733,7 @@ ctrl.listen = function(d){
           var mes = d.d.d;
           wsCtrl.commentsInRoom(roomId).push(
               {
-                avatar: (mes.user.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + mes.user.avatar):wsCtrl.defaultAvata,
+                avatar: (mes.user.avatar !== undefined && mes.user.avatar.length>0)?(wsCtrl.static + "/getimage/thumb/" + mes.user.avatar):wsCtrl.defaultAvata,
                 userId: mes.user.id,
                 user: mes.user.name,
                 time: Date.now(),
@@ -772,7 +772,7 @@ ctrl.listen = function(d){
           listChats.map((function(chat){
             wsCtrl.commentsInRoom(roomId).unshift(
                 {
-                  avatar: chat.user.avatar.length>0?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
+                  avatar: (chat.user.avatar != undefined && chat.user.avatar.length>0)?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
                   userId: chat.user.id,
                   user: chat.user.name,
                   time: chat.time,
@@ -788,7 +788,7 @@ ctrl.listen = function(d){
             var listComments = listChats.map((function(chat){
 
             return {
-              avatar: chat.user.avatar.length>0?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
+              avatar: (chat.user.avatar != undefined && chat.user.avatar.length>0)?(wsCtrl.static + '/getimage/thumb/' + chat.user.avatar):wsCtrl.defaultAvata,
               userId: chat.user.userId,
               user: chat.user.name,
               time: chat.time,
@@ -1058,7 +1058,7 @@ var ChatView = function(ctrl) {
                                  }
                                  
                               }, children: [
-                                {tag: "img", attrs: {className:"ui avatar image", src:(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}}, 
+                                {tag: "img", attrs: {className:"ui avatar image", src:(user.avatar !== undefined && user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}}, 
                                 {tag: "div", attrs: {className:"content"}, children: [
                                   {tag: "div", attrs: {className:"header"}, children: [user.name]}
                                 ]}
@@ -1080,7 +1080,7 @@ var ChatView = function(ctrl) {
                                  }
                                  
                               }, children: [
-                                {tag: "img", attrs: {className:"ui avatar image", src:(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}}, 
+                                {tag: "img", attrs: {className:"ui avatar image", src:(user.avatar !== undefined && user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}}, 
                                 {tag: "div", attrs: {className:"content"}, children: [
                                   {tag: "div", attrs: {className:"header"}, children: [user.name]}
                                 ]}
@@ -1627,16 +1627,37 @@ var GameView = function(ctrl) {
   return (
       {tag: "div", attrs: {className:"gameBg " + (wsCtrl.game?"active":"")}, children: [
       {tag: "div", attrs: {className:"gameWr"}, children: [
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}, 
-        {tag: "div", attrs: {className:"game"}, children: [" gaming "]}
-        
+        {tag: "div", attrs: {className:"ui grid  main-content"}, children: [
+  
+          {tag: "div", attrs: {class:"ui one column stackable aligned page grid"}, children: [
+            {tag: "div", attrs: {class:"column three wide"}}, 
+            {tag: "div", attrs: {class:"column ten wide"}, children: [
+              {tag: "div", attrs: {class:"ui middle aligned divided list"}, children: [
+                {tag: "div", attrs: {class:"item"}, children: [
+                  {tag: "div", attrs: {class:"right floated content"}, children: [
+                    {tag: "div", attrs: {class:"ui button"}, children: ["Add"]}
+                  ]}, 
+                  {tag: "img", attrs: {class:"ui avatar image", src:"http://placehold.it/140x100"}}, 
+                  {tag: "div", attrs: {class:"content"}, children: [
+                    "Lena"
+                  ]}
+                ]}, 
+                {tag: "div", attrs: {class:"item"}, children: [
+                  {tag: "div", attrs: {class:"right floated content"}, children: [
+                    {tag: "div", attrs: {class:"ui button"}, children: ["Add"]}
+                  ]}, 
+                  {tag: "img", attrs: {class:"ui avatar image", src:"http://placehold.it/140x100"}}, 
+                  {tag: "div", attrs: {class:"content"}, children: [
+                    "Lindsay"
+                  ]}
+                ]}
+  
+              ]}
+            ]}, 
+            {tag: "div", attrs: {class:"column three wide"}}
+          ]}
+          
+        ]}
       ]}
       ]}
   )
@@ -2178,15 +2199,14 @@ var HomeView = function(ctrl) {
                   Partial.post(post, ctrl)
               )
             })),
-            (wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published === 1460882188511)?"":(
                 {tag: "div", attrs: {className:"ui button", 
                    onclick:
                      function(){
-                       console.log(wsCtrl.data.post.list[wsCtrl.data.post.list.length-1])
-                       wsCtrl.send(wsCtrl.sendData("morePost", {time: wsCtrl.data.post.list[wsCtrl.data.post.list.length-1].published}));
+                       var numPost = wsCtrl.data.post.list.length
+                       if(numPost > 0) wsCtrl.send(wsCtrl.sendData("morePost", {time: wsCtrl.data.post.list[numPost-1].published}));
                      }
                    
-            }, children: ["More post"]})
+            }, children: ["More post"]}
           ]
       )
     
@@ -2404,7 +2424,7 @@ var NavView = function(ctrl){
   return (
       {tag: "div", attrs: {className:"ui top small blue inverted fixed  menu sha"}, children: [
         {tag: "div", attrs: {className:"ui top small blue inverted fixed  menu sha", style:"width: 1000px;left: 0; right: 0; margin: 0 auto;"}, children: [
-          {tag: "div", attrs: {class:(wsCtrl.game?"menuDisable":"")}}, 
+          {tag: "div", attrs: {className:(wsCtrl.game?"menuDisable":"")}}, 
           {tag: "a", attrs: {href:"/", "data-content":"Trang chủ", "data-position":"bottom left", 
              className:((m.route() == "/")?"active":"") + " item route-button route fix-icon", 
              config:function(el, isInited){
@@ -2424,15 +2444,6 @@ var NavView = function(ctrl){
              }
           }, children: [
             {tag: "i", attrs: {className:"large browser icon"}}
-          ]}, 
-  
-          {tag: "a", attrs: {id:(wsCtrl.game?"gameButton":""), href:"javascript:void(0)", 
-          className:"item route-button route fix-icon", 
-            onclick:function(){
-              api.toggleGame()
-            }
-          }, children: [
-          {tag: "i", attrs: {className:"large icon game"}}
           ]}, 
           
           
@@ -2458,6 +2469,14 @@ var NavView = function(ctrl){
           
           
           (wsCtrl.userId.length>0)?({tag: "div", attrs: {className:"right menu "}, children: [
+  
+            {tag: "div", attrs: {id:(wsCtrl.game?"gameButton":""), className:"item fix-icon", style:"cursor:pointer", 
+                 onclick:function(){
+                  api.toggleGame()
+                 }
+            }, children: [
+              {tag: "i", attrs: {className:"large icon game"}}
+            ]}, 
             
             {tag: "div", attrs: {className:"item fix-icon", "data-content":"Trực tuyến", "data-position":"bottom right", 
                  config:function(el, isInited){

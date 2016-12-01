@@ -70,7 +70,7 @@ var ChatView = function(ctrl) {
                                  }
                                  }
                               >
-                                <img className="ui avatar image" src={(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
+                                <img className="ui avatar image" src={(user.avatar !== undefined && user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
                                 <div className="content">
                                   <div className="header">{user.name}</div>
                                 </div>
@@ -92,7 +92,7 @@ var ChatView = function(ctrl) {
                                  }
                                  }
                               >
-                                <img className="ui avatar image" src={(user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
+                                <img className="ui avatar image" src={(user.avatar !== undefined && user.avatar.length>0)?(wsCtrl.static + "/getimage/small/" + user.avatar):wsCtrl.defaultAvata}/>
                                 <div className="content">
                                   <div className="header">{user.name}</div>
                                 </div>
